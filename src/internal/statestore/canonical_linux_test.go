@@ -1,8 +1,8 @@
 package statestore
 
 import (
-	"ai-control-plane/internal/identity"
-	"ai-control-plane/src/internal/roleresult"
+	"marc-runtime/internal/identity"
+	"marc-runtime/src/internal/roleresult"
 	"crypto/sha256"
 	"database/sql"
 	"encoding/json"

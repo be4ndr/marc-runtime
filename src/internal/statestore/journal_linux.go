@@ -1,14 +1,14 @@
 package statestore
 
 import (
-	"ai-control-plane/internal/numeric"
+	"marc-runtime/internal/numeric"
 	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"strings"
 
-	"ai-control-plane/internal/identity"
+	"marc-runtime/internal/identity"
 )
 
 // AuditRow is controller-supplied journal data. EventType and Details remain

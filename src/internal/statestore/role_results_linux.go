@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"ai-control-plane/src/internal/roleresult"
+	"marc-runtime/src/internal/roleresult"
 )
 
 // ResultFence binds acceptance to the active semantic invocation and the actor

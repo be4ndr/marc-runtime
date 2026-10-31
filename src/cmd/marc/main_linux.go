@@ -14,11 +14,11 @@ import (
 	"syscall"
 	"time"
 
-	"ai-control-plane/src/internal/app"
-	"ai-control-plane/src/internal/mcp"
-	"ai-control-plane/src/internal/orchestrator"
-	"ai-control-plane/src/internal/statestore"
 	"golang.org/x/sys/unix"
+	"marc-runtime/src/internal/app"
+	"marc-runtime/src/internal/mcp"
+	"marc-runtime/src/internal/orchestrator"
+	"marc-runtime/src/internal/statestore"
 )
 
 func main() {
@@ -56,7 +56,7 @@ func mcpStdioFile(file *os.File) (*os.File, error) {
 }
 
 func run(ctx context.Context, args []string, output io.Writer, options ...statestore.OpenOptions) (err error) {
-	flags := flag.NewFlagSet("ai-control-plane", flag.ContinueOnError)
+	flags := flag.NewFlagSet("marc", flag.ContinueOnError)
 	flags.SetOutput(output)
 	dataDir := flags.String("data-dir", "", "installation data directory on a local Linux filesystem")
 	mcpMode := flags.Bool("mcp", false, "serve external workflows over MCP stdio")

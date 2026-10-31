@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"ai-control-plane/src/internal/statestore"
 	"golang.org/x/sys/unix"
+	"marc-runtime/src/internal/statestore"
 )
 
 // Exercise run's real stdio shutdown and StateStore ownership. Check descriptors

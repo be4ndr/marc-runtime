@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/statestore"
 )
 
 func ResolveDataDir(explicit string) (string, error) {
@@ -25,6 +25,7 @@ func ResolveDataDir(explicit string) (string, error) {
 	if !filepath.IsAbs(base) {
 		return "", fmt.Errorf("XDG_DATA_HOME must be absolute")
 	}
+	// Retain the existing installation location so renaming never strands durable state.
 	return filepath.Join(base, "ai-control-plane"), nil
 }
 

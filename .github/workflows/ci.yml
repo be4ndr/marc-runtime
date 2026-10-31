@@ -35,7 +35,7 @@ jobs:
         run: |
           go test ./... -count=1
           go vet ./...
-          go build -o bin/ai-control-plane ./src/cmd/ai-control-plane
+          go build -o bin/marc ./src/cmd/marc
       - name: Check documentation and whitespace
         run: |
           python3 scripts/check-docs.py
@@ -51,6 +51,6 @@ jobs:
           GOPROXY: 'off'
         run: >-
           go test -race ./src/internal/statestore ./src/internal/orchestrator
-          ./src/internal/mcp ./src/cmd/ai-control-plane
+          ./src/internal/mcp ./src/cmd/marc
           -run 'Test(MutationActor|MCPProtectedDataPreservesSQLiteLocks|ProtectedWorktree|MCPCommandGracefulShutdownAndRestart|B7RemediationResolutionRestartAndReplay)'
           -count=1

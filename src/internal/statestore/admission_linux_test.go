@@ -11,7 +11,7 @@ import (
 	"sync"
 	"testing"
 
-	"ai-control-plane/internal/numeric"
+	"marc-runtime/internal/numeric"
 )
 
 func TestAdmissionSubmittedBoundEvidenceDoesNotRewriteNeutralHistory(t *testing.T) {

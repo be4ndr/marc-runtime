@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"ai-control-plane/src/internal/orchestrator"
+	"marc-runtime/src/internal/orchestrator"
 )
 
 // A nil runtime proves every rejected envelope stops before Orchestrator access.

@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"ai-control-plane/src/internal/roleresult"
+	"marc-runtime/src/internal/roleresult"
 )
 
 func TestCumulativeAgentHardDispositionLateUsageAndRestart(t *testing.T) {

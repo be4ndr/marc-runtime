@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"ai-control-plane/src/internal/orchestrator"
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/orchestrator"
+	"marc-runtime/src/internal/statestore"
 )
 
 // In-process stdio transport includes MCP parsing, Orchestrator, SQLite, Git and
@@ -68,7 +68,10 @@ func (c *benchmarkClient) tool(b testing.TB, name string, args any) orchestrator
 
 func benchmarkWorkflowFixture(b testing.TB, files int) (*benchmarkClient, *statestore.StateStore, string, string) {
 	b.Helper()
-	base := os.Getenv("ACP_B6_BENCH_ROOT")
+	base := os.Getenv("MARC_BENCH_ROOT")
+	if base == "" {
+		base = os.Getenv("ACP_B6_BENCH_ROOT") // Compatibility with existing benchmark setups.
+	}
 	var root string
 	if base == "" {
 		root = b.TempDir()

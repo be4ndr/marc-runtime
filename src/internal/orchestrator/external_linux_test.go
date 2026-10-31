@@ -1,7 +1,7 @@
 package orchestrator
 
 import (
-	"ai-control-plane/internal/identity"
+	"marc-runtime/internal/identity"
 	"bytes"
 	"context"
 	"crypto/sha256"
@@ -18,8 +18,8 @@ import (
 	"testing"
 	"time"
 
-	"ai-control-plane/src/internal/roleresult"
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/roleresult"
+	"marc-runtime/src/internal/statestore"
 )
 
 func externalFixture(t *testing.T) (context.Context, *statestore.StateStore, *Runtime, string, ExternalView) {

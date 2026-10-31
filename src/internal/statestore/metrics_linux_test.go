@@ -18,8 +18,8 @@ import (
 	"testing"
 	"time"
 
-	"ai-control-plane/internal/numeric"
-	"ai-control-plane/schemas"
+	"marc-runtime/internal/numeric"
+	"marc-runtime/schemas"
 )
 
 var metricsTestTime = time.Date(2026, 10, 6, 0, 0, 0, 0, time.UTC)

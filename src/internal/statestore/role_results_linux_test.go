@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"ai-control-plane/src/internal/roleresult"
+	"marc-runtime/src/internal/roleresult"
 )
 
 func resultFixture(t *testing.T, name string) []byte {

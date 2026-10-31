@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"strings"
 
-	"ai-control-plane/internal/identity"
+	"marc-runtime/internal/identity"
 )
 
 // UsageReceipt is the typed persistence input. AcceptUsageReceiptJSON validates

@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/statestore"
 )
 
 type Runtime struct {

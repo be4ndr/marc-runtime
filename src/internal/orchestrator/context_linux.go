@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"ai-control-plane/src/internal/roleresult"
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/roleresult"
+	"marc-runtime/src/internal/statestore"
 )
 
 // Semantic projections never decode stored file chunks. The complete output is

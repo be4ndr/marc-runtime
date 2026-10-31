@@ -18,7 +18,7 @@ material and preserve required third-party notices.
 go mod download
 CGO_ENABLED=0 GOPROXY=off GOTOOLCHAIN=local go test ./... -count=1
 GOPROXY=off GOTOOLCHAIN=local go vet ./...
-CGO_ENABLED=0 GOPROXY=off GOTOOLCHAIN=local go build -o bin/ai-control-plane ./src/cmd/ai-control-plane
+CGO_ENABLED=0 GOPROXY=off GOTOOLCHAIN=local go build -o bin/marc ./src/cmd/marc
 python3 scripts/check-docs.py
 git diff --check
 ```

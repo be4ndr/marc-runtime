@@ -8,9 +8,9 @@ import (
 	"math"
 	"strings"
 
-	"ai-control-plane/internal/identity"
+	"marc-runtime/internal/identity"
 
-	"ai-control-plane/internal/numeric"
+	"marc-runtime/internal/numeric"
 )
 
 // ProviderCall identifies one physical upstream call. Register it before dispatch;

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"ai-control-plane/internal/identity"
+	"marc-runtime/internal/identity"
 )
 
 func TestWorkflowDescriptiveLimitsAndAtomicRejection(t *testing.T) {

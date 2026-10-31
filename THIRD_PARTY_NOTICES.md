@@ -1,6 +1,6 @@
 # Third-party notices
 
-AI Control Plane's original work is licensed under [Apache-2.0](LICENSE).
+MARC's original work is licensed under [Apache-2.0](LICENSE).
 Dependencies retain their own copyright, license and attribution terms. This
 file identifies the pinned dependencies; the linked directories contain exact
 upstream license and notice files. These copies do not relicense dependencies.

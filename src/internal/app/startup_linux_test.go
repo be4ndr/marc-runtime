@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/statestore"
 )
 
 func TestStartupAutomaticallyInitializes(t *testing.T) {

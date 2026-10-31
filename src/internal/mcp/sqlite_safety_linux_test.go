@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"ai-control-plane/src/internal/orchestrator"
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/orchestrator"
+	"marc-runtime/src/internal/statestore"
 	"golang.org/x/sys/unix"
 )
 

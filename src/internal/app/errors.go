@@ -5,7 +5,7 @@ import (
 	"errors"
 	"log/slog"
 
-	"ai-control-plane/internal/numeric"
+	"marc-runtime/internal/numeric"
 )
 
 // LogNumericFailure is called by the owning runtime after the failed operation

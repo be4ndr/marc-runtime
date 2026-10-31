@@ -1,4 +1,4 @@
-module ai-control-plane
+module marc-runtime
 
 go 1.25.0
 

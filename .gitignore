@@ -15,6 +15,7 @@
 coverage.out
 
 # Root-level Go build executable
+/marc
 /ai-control-plane
 
 

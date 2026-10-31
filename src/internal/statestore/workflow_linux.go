@@ -10,8 +10,8 @@ import (
 	"strings"
 	"unicode"
 
-	"ai-control-plane/internal/identity"
-	"ai-control-plane/src/internal/roleresult"
+	"marc-runtime/internal/identity"
+	"marc-runtime/src/internal/roleresult"
 )
 
 // WorkflowSpec is immutable input for the deterministic fake or external MCP

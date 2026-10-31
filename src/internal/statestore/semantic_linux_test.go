@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"ai-control-plane/src/internal/roleresult"
+	"marc-runtime/src/internal/roleresult"
 )
 
 const semanticTimestamp = "2026-10-05T12:00:00Z"

@@ -3,11 +3,11 @@
 package roleresult
 
 import (
-	"ai-control-plane/internal/identity"
+	"marc-runtime/internal/identity"
 	"encoding/json"
 	"fmt"
 
-	"ai-control-plane/schemas"
+	"marc-runtime/schemas"
 )
 
 type Location struct {

@@ -14,10 +14,10 @@ import (
 	"strings"
 	"time"
 
-	"ai-control-plane/internal/identity"
-	"ai-control-plane/schemas"
-	"ai-control-plane/src/internal/roleresult"
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/internal/identity"
+	"marc-runtime/schemas"
+	"marc-runtime/src/internal/roleresult"
+	"marc-runtime/src/internal/statestore"
 )
 
 // ExternalStart descriptions (Goal, ApprovalResponse) allow 1024 Unicode code

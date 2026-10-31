@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"ai-control-plane/schemas"
-	"ai-control-plane/src/internal/roleresult"
+	"marc-runtime/schemas"
+	"marc-runtime/src/internal/roleresult"
 	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 

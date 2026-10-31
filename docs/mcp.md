@@ -15,7 +15,7 @@ The client discovers tool schemas through MCP `tools/list`.
 | `workflow_advance` | `run_id` and optional `submission`. Without a submission, reconciles captured work or issues the next accepted role. A submission returns the current role's structured result/decision with exact returned fences. |
 | `workflow_complete` | `run_id`. Verifies final Lead approval, current candidate and positive independent role/proof chain before readiness for human merge. |
 
-`mcp_client_name` is the registration name (`control-plane` in the setup example),
+`mcp_client_name` is the registration name (`marc` in the setup example),
 not initialize's client identity. It is immutable routing information, not authority.
 It must be nonempty UTF-8, at most 256 code points, with no whitespace/control characters.
 

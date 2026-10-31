@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/statestore"
 )
 
 func TestExternalMCPClientNameLegacyRestartAndReplay(t *testing.T) {

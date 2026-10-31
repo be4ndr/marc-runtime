@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"ai-control-plane/src/internal/app"
-	"ai-control-plane/src/internal/orchestrator"
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/app"
+	"marc-runtime/src/internal/orchestrator"
+	"marc-runtime/src/internal/statestore"
 )
 
 type cancelWriter struct {

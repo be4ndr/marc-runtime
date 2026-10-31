@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"unicode/utf8"
 
-	"ai-control-plane/internal/numeric"
+	"marc-runtime/internal/numeric"
 )
 
 // MaxUsageReceiptBytes bounds one flat normalized record, including whitespace

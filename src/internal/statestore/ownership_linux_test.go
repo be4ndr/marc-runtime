@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"ai-control-plane/src/internal/roleresult"
+	"marc-runtime/src/internal/roleresult"
 )
 
 const ownershipTimestamp = "2026-10-05T12:10:00Z"

@@ -1,8 +1,13 @@
-# AI Control Plane
+# MARC (Multi-Agent Runtime Control)
+
+MARC (Multi-Agent Runtime Control) is an open-source control plane for orchestrating AI agents. It coordinates multi-agent workflows, enforces execution boundaries, maintains durable state, and supports auditable execution.
 
 Linux-only local control plane for coding-agent workflows. Go owns workflow
 transitions and SQLite persistence; an external Codex MCP client performs coding
 and validation.
+
+Repository name: `marc-runtime`. The Go module is `marc-runtime` and the executable
+is `marc`; build from a source checkout.
 
 The v0.1.0 Technical Preview supports sequential Lead → Developer → Lead → QA →
 Lead → Reviewer → Lead work, bounded remediation, explicit Finding resolution,
@@ -24,7 +29,7 @@ Linux, Git and Go 1.25 or later are required. Build from this checkout:
 
 ```sh
 go mod download
-CGO_ENABLED=0 go build -o bin/ai-control-plane ./src/cmd/ai-control-plane
+CGO_ENABLED=0 go build -o bin/marc ./src/cmd/marc
 ```
 
 The source is licensed under [Apache-2.0](LICENSE). See [copyright attribution](COPYRIGHT)

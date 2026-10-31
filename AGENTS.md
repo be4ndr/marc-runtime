@@ -1,6 +1,6 @@
 # Development instructions
 
-AI Control Plane is a Linux-only Go project. Keep changes narrowly scoped.
+MARC is a Linux-only Go project. Keep changes narrowly scoped.
 Preserve Orchestrator-only authoritative mutations, SQLite authority, role
 isolation, exact replay/currentness checks, truthful unknown usage and manual merge.
 Do not synthesize external client calls or accounting.

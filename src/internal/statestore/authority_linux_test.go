@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"ai-control-plane/src/internal/roleresult"
+	"marc-runtime/src/internal/roleresult"
 )
 
 func authorityArtifact(t *testing.T, s *StateStore, id, kind string, raw []byte) ProofArtifact {

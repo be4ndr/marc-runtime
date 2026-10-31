@@ -8,7 +8,7 @@ import (
 	"io"
 	"time"
 
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/statestore"
 )
 
 // PresentHardProposal records successful delivery only after the bounded exact

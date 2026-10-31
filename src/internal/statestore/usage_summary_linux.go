@@ -1,6 +1,6 @@
 package statestore
 
-import "ai-control-plane/internal/numeric"
+import "marc-runtime/internal/numeric"
 
 // Amount and knowledge are independent: a partial amount may be NULL. These
 // summaries serve authoritative accounting and its observational projection.

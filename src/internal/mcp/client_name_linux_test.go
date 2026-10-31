@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"ai-control-plane/src/internal/orchestrator"
+	"marc-runtime/src/internal/orchestrator"
 )
 
 func assertMCPClientInstructions(t *testing.T, v orchestrator.ExternalView, name string) {

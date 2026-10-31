@@ -8,7 +8,7 @@ Python 3 is needed only for the documentation checker.
 
 ```sh
 go mod download
-CGO_ENABLED=0 go build -o bin/ai-control-plane ./src/cmd/ai-control-plane
+CGO_ENABLED=0 go build -o bin/marc ./src/cmd/marc
 ```
 
 No model credentials are required by the fake workflow or core tests. Module and
@@ -33,11 +33,11 @@ Use a fresh Run ID for a new task. The data path below must be on durable Linux
 storage, including the home directory's underlying filesystem.
 
 ```sh
-ACP_DATA="$HOME/.local/share/acp-preview"
-./bin/ai-control-plane --data-dir "$ACP_DATA" \
+MARC_DATA="$HOME/.local/share/marc-preview"
+./bin/marc --data-dir "$MARC_DATA" \
   --fake-run example-run --goal 'Verify the deterministic task artifact.' \
   --normal-tokens 1000 --approve-budget 'I approve 1000 normal WORK tokens.'
-./bin/ai-control-plane --data-dir "$ACP_DATA" --resume example-run
+./bin/marc --data-dir "$MARC_DATA" --resume example-run
 ```
 
 The fake produces an immutable goal artifact and fixture usage, then validates
@@ -57,7 +57,7 @@ A timeout cannot increase the Run bank. Only use real human authorization.
 Without workflow flags, the CLI opens persistence and waits:
 
 ```sh
-./bin/ai-control-plane --data-dir "$ACP_DATA"
+./bin/marc --data-dir "$MARC_DATA"
 ```
 
 SIGINT/SIGTERM closes the store. MCP mode reserves stdout for JSON-RPC.
@@ -67,7 +67,7 @@ SIGINT/SIGTERM closes the store. MCP mode reserves stdout for JSON-RPC.
 Register the server with absolute paths:
 
 ```sh
-codex mcp add control-plane -- /absolute/path/to/bin/ai-control-plane --mcp \
+codex mcp add marc -- /absolute/path/to/bin/marc --mcp \
   --data-dir /absolute/path/to/private/control-data
 ```
 
@@ -83,7 +83,7 @@ There is no external process supervisor or automatic merge/push/cleanup.
 ## Compatibility and failures
 
 The CLI has no `--version` flag; record the source identity, Go version and
-`go version -m bin/ai-control-plane`. MCP initialization reports version `0.1.0`.
+`go version -m bin/marc`. MCP initialization reports version `0.1.0`.
 No stable API, migration compatibility or long-term support window is promised.
 
 Inspect current workflow state after an uncertain acknowledgement before retrying.
@@ -91,3 +91,31 @@ Identical replay is supported; altered accepted payloads or stale fences reject.
 Original deadlines remain immutable. New roles after expiry reject even if an
 already-issued role submitted its result late. Missing authority blocks readiness.
 No automatic retry renews a budget, deadline or semantic role.
+
+## Rename compatibility
+
+MARC was previously named AI Control Plane. Build the renamed CLI from
+`./src/cmd/marc`; the previous Go module/import path and command source directory
+have changed. The module remains a checkout-local path, `marc-runtime`; no GitHub
+owner or hosted module installation path is assumed.
+
+Existing CLI flags and MCP tool names/submission fields are unchanged. MCP
+initialization now identifies the server as `marc`. Existing MCP registration
+names remain usable; persisted workflow routing names are not rewritten. To
+retain an existing executable path while rebuilding, use:
+
+```sh
+CGO_ENABLED=0 go build -o bin/ai-control-plane ./src/cmd/marc
+```
+
+Alternatively, update the client command to `bin/marc`. Existing live processes
+continue using their loaded binary until restarted. No user-level client
+configuration is automatically changed by the source rename.
+
+The existing default `ai-control-plane` data directory and `control-plane.db`
+filename are retained to avoid creating a second installation or stranding Runs.
+Use `--data-dir` to select a different location explicitly. Schema resolver URIs,
+database migration bytes, JSON wire contracts, stored identifiers and old test
+helper environment names remain unchanged. `MARC_BENCH_ROOT` is the preferred
+benchmark storage variable; `ACP_B6_BENCH_ROOT` remains a fallback. The rename
+does not migrate or rewrite stored evidence.

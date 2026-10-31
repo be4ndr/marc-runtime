@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"ai-control-plane/internal/numeric"
+	"marc-runtime/internal/numeric"
 )
 
 func addProviderCall(t *testing.T, s *StateStore, id, model string) {

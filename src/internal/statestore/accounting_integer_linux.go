@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"ai-control-plane/internal/numeric"
+	"marc-runtime/internal/numeric"
 )
 
 func checkedAdd(a, b int64) (int64, error) {

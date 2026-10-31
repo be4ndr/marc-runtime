@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"ai-control-plane/src/internal/orchestrator"
+	"marc-runtime/src/internal/orchestrator"
 )
 
 func TestMCPContextHistoryAndHealth(t *testing.T) {

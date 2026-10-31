@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	"ai-control-plane/internal/identity"
+	"marc-runtime/internal/identity"
 )
 
 // ErrMutationAuthority means the local runtime did not identify ORCHESTRATOR as

@@ -14,8 +14,8 @@ import (
 	"syscall"
 	"time"
 
-	"ai-control-plane/internal/identity"
-	"ai-control-plane/src/internal/roleresult"
+	"marc-runtime/internal/identity"
+	"marc-runtime/src/internal/roleresult"
 )
 
 type Request struct {

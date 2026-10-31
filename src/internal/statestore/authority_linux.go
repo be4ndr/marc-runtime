@@ -13,7 +13,7 @@ import (
 	"sort"
 	"strings"
 
-	"ai-control-plane/internal/identity"
+	"marc-runtime/internal/identity"
 )
 
 // All acceptance APIs are controller-only, just like admission/ownership APIs.

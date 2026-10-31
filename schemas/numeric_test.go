@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"ai-control-plane/internal/numeric"
+	"marc-runtime/internal/numeric"
 )
 
 func TestExtremeNumericSyntaxReturnsError(t *testing.T) {

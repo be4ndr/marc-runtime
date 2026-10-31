@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"strings"
 
-	"ai-control-plane/internal/identity"
-	"ai-control-plane/internal/numeric"
-	"ai-control-plane/schemas"
+	"marc-runtime/internal/identity"
+	"marc-runtime/internal/numeric"
+	"marc-runtime/schemas"
 )
 
 type producer struct {

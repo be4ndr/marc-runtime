@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"testing"
 
-	"ai-control-plane/src/internal/orchestrator"
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/orchestrator"
+	"marc-runtime/src/internal/statestore"
 )
 
 func TestMCPSharedDatabasePeerExitAndRestart(t *testing.T) {

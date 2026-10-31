@@ -14,9 +14,9 @@ import (
 	"sync"
 	"unicode/utf8"
 
-	"ai-control-plane/internal/identity"
-	"ai-control-plane/schemas"
-	"ai-control-plane/src/internal/orchestrator"
+	"marc-runtime/internal/identity"
+	"marc-runtime/schemas"
+	"marc-runtime/src/internal/orchestrator"
 	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
@@ -255,7 +255,7 @@ func Serve(ctx context.Context, r *orchestrator.Runtime, input io.Reader, output
 				version = "2025-11-25"
 			}
 			initialized = true
-			reply.Result = map[string]any{"protocolVersion": version, "capabilities": map[string]any{"tools": map[string]any{}}, "serverInfo": map[string]string{"name": "ai-control-plane", "version": "0.1.0"}, "instructions": "Supply the MCP registration name as mcp_client_name when starting a workflow, not clientInfo.name. Follow the workflow-scoped instructions returned by workflow tools. Use only workflow tools for state transitions. Perform coding externally. Never fabricate usage; internal Codex requests are excluded. Use fresh role contexts and structured results, no transcript propagation."}
+			reply.Result = map[string]any{"protocolVersion": version, "capabilities": map[string]any{"tools": map[string]any{}}, "serverInfo": map[string]string{"name": "marc", "version": "0.1.0"}, "instructions": "Supply the MCP registration name as mcp_client_name when starting a workflow, not clientInfo.name. Follow the workflow-scoped instructions returned by workflow tools. Use only workflow tools for state transitions. Perform coding externally. Never fabricate usage; internal Codex requests are excluded. Use fresh role contexts and structured results, no transcript propagation."}
 		case "ping":
 			reply.Result = map[string]any{}
 		case "tools/list":

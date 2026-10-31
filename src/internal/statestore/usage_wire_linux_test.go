@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"ai-control-plane/internal/numeric"
+	"marc-runtime/internal/numeric"
 )
 
 func usageJSONFixture(t *testing.T, name string) []byte {

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"ai-control-plane/internal/numeric"
+	"marc-runtime/internal/numeric"
 )
 
 func TestNumericFailureLoggingDoesNotLeakPayload(t *testing.T) {

@@ -11,7 +11,7 @@ import (
 	"sync"
 	"unicode/utf8"
 
-	"ai-control-plane/internal/identity"
+	"marc-runtime/internal/identity"
 	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 

@@ -9,8 +9,8 @@ import (
 	"sync"
 	"testing"
 
-	"ai-control-plane/internal/numeric"
-	"ai-control-plane/src/internal/roleresult"
+	"marc-runtime/internal/numeric"
+	"marc-runtime/src/internal/roleresult"
 )
 
 func requireNumeric(t *testing.T, err error, domain string) *numeric.Error {

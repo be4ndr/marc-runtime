@@ -17,7 +17,10 @@ import (
 // fixture-owned calls, never representations of external Codex requests.
 func benchmarkManagedHistory(b *testing.B, n int) *StateStore {
 	b.Helper()
-	base := os.Getenv("ACP_B6_BENCH_ROOT")
+	base := os.Getenv("MARC_BENCH_ROOT")
+	if base == "" {
+		base = os.Getenv("ACP_B6_BENCH_ROOT") // Compatibility with existing benchmark setups.
+	}
 	dir := b.TempDir()
 	if base != "" {
 		var err error

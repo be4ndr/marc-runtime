@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"ai-control-plane/schemas"
+	"marc-runtime/schemas"
 )
 
 type usageReceiptWire struct {

@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"ai-control-plane/src/internal/app"
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/app"
+	"marc-runtime/src/internal/statestore"
 	"golang.org/x/sys/unix"
 )
 

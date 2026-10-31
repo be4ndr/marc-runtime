@@ -16,8 +16,8 @@ import (
 	"testing"
 	"time"
 
-	"ai-control-plane/src/internal/roleresult"
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/roleresult"
+	"marc-runtime/src/internal/statestore"
 )
 
 func TestFakeSubprocess(t *testing.T) {

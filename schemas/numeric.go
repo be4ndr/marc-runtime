@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"ai-control-plane/internal/numeric"
+	"marc-runtime/internal/numeric"
 )
 
 // The pinned validator's rational parser refuses decimal scales outside +/-1e6

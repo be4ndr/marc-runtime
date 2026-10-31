@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"ai-control-plane/src/internal/roleresult"
-	"ai-control-plane/src/internal/statestore"
+	"marc-runtime/src/internal/roleresult"
+	"marc-runtime/src/internal/statestore"
 )
 
 // Synthetic history can exceed the live three-candidate limit without granting

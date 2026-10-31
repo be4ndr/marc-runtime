@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"ai-control-plane/internal/identity"
+	"marc-runtime/internal/identity"
 )
 
 // These contracts accept explicit controller configuration, not agent requests.
