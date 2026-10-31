@@ -1,0 +1,57 @@
+# Internal development state; never publish.
+/.private/
+/.local/
+/.data/
+
+# Go build, coverage and profiling output.
+/bin/
+/build/
+/dist/
+/coverage/
+*.test
+*.prof
+*.pprof
+*.coverprofile
+coverage.out
+
+# Root-level Go build executable
+/ai-control-plane
+
+
+# SQLite installations and sidecars, not SQL source migrations.
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*-wal
+*-shm
+*-journal
+
+# Logs, secrets and local environment/configuration.
+*.log
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+auth.json
+
+# Temporary files and editor state.
+/tmp/
+*.tmp
+*.swp
+*.swo
+*~
+__pycache__/
+*.pyc
+.venv/
+venv/
+.DS_Store
+/.vscode/
+/.idea/

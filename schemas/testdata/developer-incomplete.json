@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "result_id": "res-c002-r003",
+  "run_id": "run1",
+  "cycle": 2,
+  "result_ordinal": 3,
+  "execution_id": "execution2",
+  "attempt_id": "attempt2",
+  "invocation_id": "invocation2",
+  "role": "DEVELOPER",
+  "content_identity": "content2",
+  "outcome": "incomplete",
+  "summary": "No useful artifact was produced.",
+  "evidence_refs": [],
+  "produced_at": "2026-10-05T12:00:00Z",
+  "remaining_work": [
+    "Finish the focused change."
+  ]
+}

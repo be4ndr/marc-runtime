@@ -1,0 +1,34 @@
+{
+  "ProofID": "fixture-proof",
+  "RunID": "fixture-run",
+  "ContentIdentity": "fixture-content",
+  "Reason": "controller decision on exact durable evidence",
+  "Boundary": {},
+  "Evidence": [],
+  "Kind": "TERMINAL",
+  "Verdict": "SUPPORTS_READINESS",
+  "Terminal": {
+    "Completion": {
+      "ProofID": "fixture-parent",
+      "SHA256": "fixture-digest"
+    },
+    "QAValidation": {
+      "ProofID": "fixture-parent",
+      "SHA256": "fixture-digest"
+    },
+    "ReviewValidation": {
+      "ProofID": "fixture-parent",
+      "SHA256": "fixture-digest"
+    },
+    "ReviewAdmission": {
+      "ProofID": "fixture-parent",
+      "SHA256": "fixture-digest"
+    },
+    "Containment": {
+      "ProofID": "fixture-parent",
+      "SHA256": "fixture-digest"
+    },
+    "LeadStateID": "fixture-lead",
+    "HumanDispositions": []
+  }
+}

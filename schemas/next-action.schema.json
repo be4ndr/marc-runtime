@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lead next action",
+  "description": "Immutable Lead semantic wire command referencing the exact accepted SQLite Lead-state snapshot.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "action_id",
+    "run_id",
+    "cycle",
+    "producer",
+    "based_on_lead_state",
+    "content_identity",
+    "target_role",
+    "purpose",
+    "finding_ids",
+    "intent",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "action_id": { "$ref": "#/$defs/identifier" },
+    "run_id": { "$ref": "#/$defs/identifier" },
+    "cycle": { "$ref": "#/$defs/ordinal" },
+    "producer": { "$ref": "#/$defs/producer" },
+    "based_on_lead_state": { "$ref": "#/$defs/leadStateReference" },
+    "content_identity": { "$ref": "#/$defs/identifier" },
+    "target_role": { "enum": ["DEVELOPER", "QA", "REVIEWER"] },
+    "purpose": {
+      "enum": [
+        "IMPLEMENT",
+        "REMEDIATE",
+        "FINALIZE_IMPLEMENTATION",
+        "QA",
+        "REVIEW",
+        "FINALIZE_REVIEW"
+      ]
+    },
+    "finding_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "role-result-common.schema.json#/$defs/findingID" }
+    },
+    "intent": {
+      "description": "Bounded semantic instruction. FINALIZE_IMPLEMENTATION is completion-only and cannot authorize new implementation or exploration; FINALIZE_REVIEW is completion-only and cannot authorize new review exploration.",
+      "type": "string", "maxLength": 1024,
+      "minLength": 1
+    },
+    "created_at": { "$ref": "#/$defs/timestamp" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "target_role": { "const": "DEVELOPER" } } },
+      "then": {
+        "properties": {
+          "purpose": {
+            "enum": ["IMPLEMENT", "REMEDIATE", "FINALIZE_IMPLEMENTATION"]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "target_role": { "const": "QA" } } },
+      "then": { "properties": { "purpose": { "const": "QA" } } }
+    },
+    {
+      "if": { "properties": { "target_role": { "const": "REVIEWER" } } },
+      "then": {
+        "properties": { "purpose": { "enum": ["REVIEW", "FINALIZE_REVIEW"] } }
+      }
+    },
+    {
+      "if": { "properties": { "purpose": { "const": "REMEDIATE" } } },
+      "then": { "properties": { "finding_ids": { "minItems": 1 } } }
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "ordinal": { "type": "integer", "minimum": 1 },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["execution_id", "attempt", "invocation_id", "invocation"],
+      "properties": {
+        "execution_id": { "$ref": "#/$defs/identifier" },
+        "attempt": { "$ref": "#/$defs/ordinal" },
+        "invocation_id": { "$ref": "#/$defs/identifier" },
+        "invocation": { "$ref": "#/$defs/ordinal" }
+      }
+    },
+    "timestamp": { "type": "string", "maxLength": 256, "format": "date-time" },
+    "leadStateReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lead_state_id"],
+      "properties": {
+        "lead_state_id": { "$ref": "#/$defs/identifier" }
+      }
+    }
+  }
+}

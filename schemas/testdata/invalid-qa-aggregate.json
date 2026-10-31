@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "result_id": "res-c002-r003",
+  "run_id": "run1",
+  "cycle": 2,
+  "result_ordinal": 3,
+  "execution_id": "execution2",
+  "attempt_id": "attempt2",
+  "invocation_id": "invocation2",
+  "role": "QA",
+  "content_identity": "content2",
+  "outcome": "passed",
+  "summary": "Bounded task complete; tests passed.",
+  "evidence_refs": [
+    {
+      "evidence_id": "proof",
+      "kind": "test_result",
+      "location": {
+        "path": "tests/example_test.go",
+        "start_line": 2,
+        "end_line": 4
+      }
+    }
+  ],
+  "produced_at": "2026-10-05T12:00:00Z",
+  "checks": [
+    {
+      "check_id": "check-001",
+      "required": true,
+      "outcome": "failed",
+      "summary": "Expected behavior established.",
+      "evidence_refs": [
+        {
+          "evidence_id": "proof",
+          "kind": "test_result",
+          "location": {
+            "path": "tests/example_test.go",
+            "start_line": 2,
+            "end_line": 4
+          }
+        }
+      ]
+    }
+  ],
+  "finding_occurrences": []
+}

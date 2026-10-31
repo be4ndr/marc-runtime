@@ -1,0 +1,8 @@
+{
+  "finding_id": "fnd-000005",
+  "finding_ordinal": 5,
+  "origin_cycle": 1,
+  "origin_result_id": "res-c001-r001",
+  "blocking": true,
+  "summary": "Stable semantic issue."
+}

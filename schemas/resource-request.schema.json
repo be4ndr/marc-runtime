@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lead resource request",
+  "description": "Immutable Lead-authored request for additional resources. It does not grant or reserve resources or create a future invocation. JSON is protocol/export; accepted structured state is authoritative in SQLite.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "cycle",
+    "request_ordinal",
+    "request_id",
+    "requester",
+    "target",
+    "source_invocation_id",
+    "requested",
+    "justification",
+    "based_on",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "run_id": { "$ref": "#/$defs/identifier" },
+    "cycle": { "$ref": "#/$defs/ordinal" },
+    "request_ordinal": { "$ref": "#/$defs/ordinal" },
+    "request_id": {
+      "description": "Derived from cycle and request_ordinal as rr-cNNN-rNNN; exact equality is a runtime invariant.",
+      "type": "string",
+      "pattern": "^rr-c[0-9]{3,}-r[0-9]{3,}$"
+    },
+    "requester": { "$ref": "#/$defs/requester" },
+    "target": { "$ref": "#/$defs/target" },
+    "source_invocation_id": {
+      "description": "Worker invocation whose bounded result/checkpoint led to this request; never a future continuation invocation.",
+      "$ref": "#/$defs/identifier"
+    },
+    "requested": { "$ref": "#/$defs/requestedResources" },
+    "justification": { "type": "string", "maxLength": 1024, "minLength": 1 },
+    "based_on": { "$ref": "#/$defs/basedOn" },
+    "created_at": { "$ref": "#/$defs/timestamp" }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "ordinal": { "type": "integer", "minimum": 1 },
+    "timestamp": { "type": "string", "maxLength": 256, "format": "date-time" },
+    "leadStateReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lead_state_id"],
+      "properties": {
+        "lead_state_id": { "$ref": "#/$defs/identifier" }
+      }
+    },
+    "requester": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "invocation_id"],
+      "properties": {
+        "role": { "const": "lead" },
+        "invocation_id": { "$ref": "#/$defs/identifier" }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["execution_id", "attempt_id", "role", "purpose", "content_identity"],
+      "properties": {
+        "execution_id": { "$ref": "#/$defs/identifier" },
+        "attempt_id": { "$ref": "#/$defs/identifier" },
+        "role": { "enum": ["DEVELOPER", "QA", "REVIEWER"] },
+        "purpose": {
+          "enum": [
+            "IMPLEMENT",
+            "REMEDIATE",
+            "FINALIZE_IMPLEMENTATION",
+            "QA",
+            "REVIEW",
+            "FINALIZE_REVIEW"
+          ]
+        },
+        "content_identity": { "$ref": "#/$defs/identifier" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "role": { "const": "DEVELOPER" } } },
+          "then": {
+            "properties": {
+              "purpose": { "enum": ["IMPLEMENT", "REMEDIATE", "FINALIZE_IMPLEMENTATION"] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "role": { "const": "QA" } } },
+          "then": { "properties": { "purpose": { "const": "QA" } } }
+        },
+        {
+          "if": { "properties": { "role": { "const": "REVIEWER" } } },
+          "then": {
+            "properties": { "purpose": { "enum": ["REVIEW", "FINALIZE_REVIEW"] } }
+          }
+        }
+      ]
+    },
+    "requestedResources": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "work_tokens": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "basedOn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lead_state_ref", "source_result_ref"],
+      "properties": {
+        "lead_state_ref": { "$ref": "#/$defs/leadStateReference" },
+        "source_result_ref": { "$ref": "#/$defs/resultReference" }
+      }
+    },
+    "resultReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result_id"],
+      "properties": {
+        "result_id": { "$ref": "role-result-common.schema.json#/$defs/resultID" }
+      }
+    }
+  }
+}

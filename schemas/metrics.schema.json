@@ -1,0 +1,411 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Observational run metrics",
+  "description": "Observational projection generated from authoritative SQLite data. Never read this document back as control-plane state. Projection refresh failure cannot roll back a committed database transaction. Formula, identity and child-rollup consistency require deterministic validation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "updated_at", "totals", "cycles"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "run_id": { "$ref": "#/$defs/identifier" },
+    "updated_at": { "$ref": "#/$defs/timestamp" },
+    "accounting_status": { "enum": ["unknown", "incomplete", "complete", "excluded"] },
+    "accounting_incomplete": { "type": "boolean" },
+    "totals": { "$ref": "#/$defs/aggregate" },
+    "cycles": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/cycle" }
+    },
+    "generated_at": { "$ref": "#/$defs/timestamp" },
+    "source_snapshot": {
+      "description": "SHA-256 of the canonical contributing SQLite snapshot; generation time is excluded.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "execution_state": { "$ref": "#/$defs/runExecutionState" }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "providerLabel": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "\\S"
+    },
+    "nullableProviderLabel": {
+      "anyOf": [{ "$ref": "#/$defs/providerLabel" }, { "type": "null" }]
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "usageState": { "enum": ["unknown", "partial", "final"] },
+    "nonnegativeMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "value"],
+      "properties": {
+        "state": { "$ref": "#/$defs/usageState" },
+        "value": { "type": ["integer", "null"], "minimum": 0 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "unknown" } } },
+          "then": { "properties": { "value": { "type": "null" } } },
+          "else": { "properties": { "value": { "type": "integer", "minimum": 0 } } }
+        }
+      ]
+    },
+    "secondsMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "value"],
+      "properties": {
+        "state": { "$ref": "#/$defs/usageState" },
+        "value": { "type": ["number", "null"], "minimum": 0 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "unknown" } } },
+          "then": { "properties": { "value": { "type": "null" } } },
+          "else": { "properties": { "value": { "type": "number", "minimum": 0 } } }
+        }
+      ]
+    },
+    "usageMetrics": {
+      "description": "Per-ProviderCall authoritative current usage; invocation and higher scopes aggregate all calls. Numeric amounts and completeness are independent. Partial may have NULL amounts. Missing contributors never become zero or permit a final total.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receipt_state",
+        "input_tokens",
+        "cached_input_tokens",
+        "fresh_input_tokens",
+        "output_tokens",
+        "reasoning_tokens",
+        "work_tokens",
+        "spend_tokens"
+      ],
+      "properties": {
+        "receipt_state": { "$ref": "#/$defs/usageState" },
+        "input_tokens": { "$ref": "#/$defs/usageMetric" },
+        "cached_input_tokens": { "$ref": "#/$defs/usageMetric" },
+        "fresh_input_tokens": { "$ref": "#/$defs/usageMetric" },
+        "output_tokens": { "$ref": "#/$defs/usageMetric" },
+        "reasoning_tokens": { "$ref": "#/$defs/usageMetric" },
+        "work_tokens": { "$ref": "#/$defs/usageMetric" },
+        "spend_tokens": { "$ref": "#/$defs/usageMetric" }
+      }
+    },
+    "eventCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "soft_limit",
+        "resource_request",
+        "grant",
+        "partial_grant",
+        "deny",
+        "degrade",
+        "context_reset",
+        "finalization",
+        "recovery"
+      ],
+      "properties": {
+        "soft_limit": { "$ref": "#/$defs/nonnegativeMetric" },
+        "resource_request": { "$ref": "#/$defs/nonnegativeMetric" },
+        "grant": { "$ref": "#/$defs/nonnegativeMetric" },
+        "partial_grant": { "$ref": "#/$defs/nonnegativeMetric" },
+        "deny": { "$ref": "#/$defs/nonnegativeMetric" },
+        "degrade": { "$ref": "#/$defs/nonnegativeMetric" },
+        "context_reset": { "$ref": "#/$defs/nonnegativeMetric" },
+        "finalization": { "$ref": "#/$defs/nonnegativeMetric" },
+        "recovery": { "$ref": "#/$defs/nonnegativeMetric" }
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_calls",
+        "max_input_tokens",
+        "elapsed_time_sec",
+        "projection_bytes",
+        "context_growth_bytes",
+        "tool_time_sec",
+        "waiting_time_sec"
+      ],
+      "properties": {
+        "model_calls": { "$ref": "#/$defs/nonnegativeMetric" },
+        "max_input_tokens": { "$ref": "#/$defs/nonnegativeMetric" },
+        "elapsed_time_sec": { "$ref": "#/$defs/secondsMetric" },
+        "projection_bytes": { "$ref": "#/$defs/nonnegativeMetric" },
+        "context_growth_bytes": { "$ref": "#/$defs/nonnegativeMetric" },
+        "tool_time_sec": { "$ref": "#/$defs/secondsMetric" },
+        "waiting_time_sec": { "$ref": "#/$defs/secondsMetric" }
+      }
+    },
+    "aggregate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["usage", "telemetry", "resource_events"],
+      "properties": {
+        "usage": { "$ref": "#/$defs/usageMetrics" },
+        "telemetry": { "$ref": "#/$defs/telemetry" },
+        "resource_events": { "$ref": "#/$defs/eventCounts" }
+      }
+    },
+    "call": {
+      "description": "Optional provider-exposed context/tool telemetry; distinct from durable ProviderCall accounting. Omit when unavailable.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["call_id", "observed_at", "input_tokens", "projection_bytes", "tool_time_sec", "waiting_time_sec"],
+      "properties": {
+        "call_id": { "$ref": "#/$defs/identifier" },
+        "observed_at": { "$ref": "#/$defs/timestamp" },
+        "input_tokens": { "$ref": "#/$defs/nonnegativeMetric" },
+        "projection_bytes": { "$ref": "#/$defs/nonnegativeMetric" },
+        "tool_time_sec": { "$ref": "#/$defs/secondsMetric" },
+        "waiting_time_sec": { "$ref": "#/$defs/secondsMetric" }
+      }
+    },
+    "invocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "invocation",
+        "invocation_id",
+        "execution_id",
+        "attempt",
+        "source",
+        "model",
+        "receipt_reported_at",
+        "metrics"
+      ],
+      "properties": {
+        "invocation": { "type": "integer", "minimum": 1 },
+        "invocation_id": { "$ref": "#/$defs/identifier" },
+        "execution_id": { "$ref": "#/$defs/identifier" },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "source": { "$ref": "#/$defs/nullableProviderLabel" },
+        "model": { "$ref": "#/$defs/nullableProviderLabel" },
+        "receipt_reported_at": {
+          "anyOf": [{ "$ref": "#/$defs/timestamp" }, { "type": "null" }]
+        },
+        "metrics": { "$ref": "#/$defs/aggregate" },
+        "calls": {
+          "description": "Optional provider-exposed call telemetry. Never synthesize entries or derive invocation usage by summing calls.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/call" }
+        },
+        "attempt_id": { "$ref": "#/$defs/identifier" },
+        "reasoning_effort": { "type": "string" },
+        "receipt_id": { "type": ["string", "null"] },
+        "execution_state": { "$ref": "#/$defs/invocationExecutionState" },
+        "provider_calls": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/providerCall" } }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "metrics": {
+                "properties": { "usage": { "properties": { "receipt_state": { "enum": ["partial", "final"] } } } }
+              }
+            },
+            "not": { "required": ["provider_calls"] }
+          },
+          "then": {
+            "properties": {
+              "source": { "$ref": "#/$defs/providerLabel" },
+              "model": { "$ref": "#/$defs/providerLabel" },
+              "receipt_reported_at": { "$ref": "#/$defs/timestamp" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "metrics": { "properties": { "usage": { "properties": { "receipt_state": { "const": "unknown" } } } } }
+            },
+            "not": { "required": ["provider_calls"] }
+          },
+          "then": {
+            "properties": {
+              "metrics": {
+                "properties": {
+                  "usage": {
+                    "properties": {
+                      "input_tokens": { "properties": { "state": { "const": "unknown" } } },
+                      "cached_input_tokens": { "properties": { "state": { "const": "unknown" } } },
+                      "fresh_input_tokens": { "properties": { "state": { "const": "unknown" } } },
+                      "output_tokens": { "properties": { "state": { "const": "unknown" } } },
+                      "reasoning_tokens": { "properties": { "state": { "const": "unknown" } } },
+                      "work_tokens": { "properties": { "state": { "const": "unknown" } } },
+                      "spend_tokens": { "properties": { "state": { "const": "unknown" } } }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "metrics", "invocations"],
+      "properties": {
+        "role": { "enum": ["ORCHESTRATOR", "LEAD", "DEVELOPER", "QA", "REVIEWER"] },
+        "metrics": { "$ref": "#/$defs/aggregate" },
+        "invocations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/invocation" }
+        }
+      }
+    },
+    "cycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cycle", "metrics", "roles"],
+      "properties": {
+        "cycle": { "type": "integer", "minimum": 1 },
+        "metrics": { "$ref": "#/$defs/aggregate" },
+        "roles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/role" }
+        }
+      }
+    },
+    "runExecutionState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "current_cycle", "revision", "active_actor"],
+      "properties": {
+        "status": { "type": "string" },
+        "current_cycle": { "type": "integer", "minimum": 1 },
+        "revision": { "type": "integer", "minimum": 0 },
+        "active_actor": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["role", "invocation_id", "ownership_epoch", "revision"],
+              "properties": {
+                "role": { "enum": ["LEAD", "DEVELOPER", "QA", "REVIEWER"] },
+                "invocation_id": { "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] },
+                "ownership_epoch": { "type": "integer", "minimum": 1 },
+                "revision": { "type": "integer", "minimum": 0 }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "invocationExecutionState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "invocation_status",
+        "attempt_status",
+        "execution_status",
+        "purpose",
+        "current",
+        "started_at",
+        "completed_at"
+      ],
+      "properties": {
+        "invocation_status": { "type": "string" },
+        "attempt_status": { "type": "string" },
+        "execution_status": { "type": "string" },
+        "purpose": { "type": "string" },
+        "current": { "type": "boolean" },
+        "started_at": { "$ref": "#/$defs/timestamp" },
+        "completed_at": { "anyOf": [{ "$ref": "#/$defs/timestamp" }, { "type": "null" }] }
+      }
+    },
+    "providerCall": {
+      "description": "One durable physical upstream ProviderCall, including retries and fallbacks. Usage is authoritative current SQLite state, never a receipt selection.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider_call_id",
+        "invocation_id",
+        "ordinal",
+        "source",
+        "model",
+        "reasoning_effort",
+        "started_at",
+        "duration_ns",
+        "finished_at",
+        "receipt_id",
+        "receipt_reported_at",
+        "revision",
+        "usage",
+        "usage_evidence"
+      ],
+      "properties": {
+        "provider_call_id": { "$ref": "#/$defs/identifier" },
+        "ordinal": { "type": "integer", "minimum": 1 },
+        "source": { "$ref": "#/$defs/providerLabel" },
+        "model": { "$ref": "#/$defs/providerLabel" },
+        "reasoning_effort": { "type": "string" },
+        "started_at": { "$ref": "#/$defs/timestamp", "description": "Observational wall-clock physical-call start; does not define lifecycle ordering." },
+        "duration_ns": { "type": ["integer", "null"], "minimum": 0, "description": "Measured monotonic elapsed nanoseconds; NULL means completion has not been durably observed." },
+        "finished_at": { "anyOf": [{ "$ref": "#/$defs/timestamp" }, { "type": "null" }], "description": "Derived started_at + duration_ns for display only; NULL when duration is unknown. Non-authoritative." },
+        "receipt_id": { "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] },
+        "receipt_reported_at": { "anyOf": [{ "$ref": "#/$defs/timestamp" }, { "type": "null" }] },
+        "revision": { "type": "integer", "minimum": 0 },
+        "usage": { "$ref": "#/$defs/usageMetrics" },
+        "invocation_id": { "$ref": "#/$defs/identifier" },
+        "usage_evidence": {
+          "description": "Immutable receipt identity supporting each known current amount; omitted counters retain earlier evidence as partial, never final.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "input_tokens",
+            "cached_input_tokens",
+            "fresh_input_tokens",
+            "output_tokens",
+            "reasoning_tokens",
+            "work_tokens",
+            "spend_tokens"
+          ],
+          "properties": {
+            "input_tokens": { "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] },
+            "cached_input_tokens": { "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] },
+            "fresh_input_tokens": { "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] },
+            "output_tokens": { "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] },
+            "reasoning_tokens": { "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] },
+            "work_tokens": { "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] },
+            "spend_tokens": { "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] }
+          }
+        }
+      }
+    },
+    "usageMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "value"],
+      "properties": { "state": { "$ref": "#/$defs/usageState" }, "value": { "type": ["integer", "null"], "minimum": 0 } },
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "unknown" } } },
+          "then": { "properties": { "value": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "state": { "const": "final" } } },
+          "then": { "properties": { "value": { "type": "integer", "minimum": 0 } } }
+        }
+      ],
+      "description": "Known amount and completeness are independent: partial may be NULL; final requires a known amount."
+    }
+  }
+}

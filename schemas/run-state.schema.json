@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Run state export snapshot",
+  "description": "Optional export/debug snapshot of authoritative SQLite state. Never load this document as persistence authority. Schema validity does not establish execution or merge authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "project",
+    "status",
+    "current_cycle",
+    "current_phase",
+    "current_role",
+    "current_invocation",
+    "current_content_identity",
+    "lead_state",
+    "accepted_action",
+    "execution",
+    "authority",
+    "recovery",
+    "updated_at"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "run_id": { "$ref": "#/$defs/identifier" },
+    "project": { "$ref": "#/$defs/identifier" },
+    "status": {
+      "enum": ["CREATED", "RUNNING", "BLOCKED", "READY_FOR_HUMAN_MERGE", "FAILED", "CANCELLED"]
+    },
+    "current_cycle": { "$ref": "#/$defs/ordinal" },
+    "current_phase": {
+      "enum": [null, "LEAD", "IMPLEMENT_WORK", "IMPLEMENT_FINALIZE", "QA", "REVIEW_WORK", "REVIEW_FINALIZE", "RECOVERY"]
+    },
+    "current_role": { "$ref": "#/$defs/nullableRole" },
+    "current_invocation": { "$ref": "#/$defs/nullableOrdinal" },
+    "current_content_identity": {
+      "description": "Opaque controller-verified content identifier, independent of provider sessions and artifact digests.",
+      "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }]
+    },
+    "lead_state": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/artifactReference",
+          "properties": {
+            "file": { "pattern": "^lead-state-c[0-9]{3,}(-i[0-9]{3,})?\\.json$" }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
+    "accepted_action": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/artifactReference",
+          "properties": {
+            "file": { "pattern": "^next-action-c[0-9]{3,}(-i[0-9]{3,})?\\.json$" }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
+    "execution": { "$ref": "#/$defs/execution" },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["review_eligible", "ready_for_human_merge", "evidence"],
+      "properties": {
+        "review_eligible": { "type": "boolean" },
+        "ready_for_human_merge": { "type": "boolean" },
+        "evidence": {
+          "description": "Sealed controller-validated authority proof for the current content; terminal proof when ready for human merge.",
+          "$ref": "#/$defs/nullableArtifactReference"
+        }
+      }
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "recoverable", "evidence"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "recoverable": { "type": "boolean" },
+        "evidence": {
+          "description": "Sealed recovery disposition; required to assert a confirmed recoverable path.",
+          "$ref": "#/$defs/nullableArtifactReference"
+        }
+      }
+    },
+    "updated_at": { "$ref": "#/$defs/timestamp" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "authority": {
+            "anyOf": [
+              { "properties": { "review_eligible": { "const": true } } },
+              { "properties": { "ready_for_human_merge": { "const": true } } }
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "authority": { "properties": { "evidence": { "$ref": "#/$defs/artifactReference" } } },
+          "current_content_identity": { "$ref": "#/$defs/identifier" },
+          "execution": { "properties": { "state": { "enum": ["IDLE", "COMPLETED"] } } },
+          "recovery": { "properties": { "required": { "const": false } } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "recovery": { "properties": { "recoverable": { "const": true } } } } },
+      "then": {
+        "properties": {
+          "recovery": { "properties": { "evidence": { "$ref": "#/$defs/artifactReference" } } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "execution": { "properties": { "state": { "const": "RUNNING" } } } } },
+      "then": {
+        "properties": {
+          "current_phase": { "type": "string" },
+          "current_role": { "$ref": "#/$defs/role" },
+          "current_invocation": { "$ref": "#/$defs/ordinal" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "READY_FOR_HUMAN_MERGE" } } },
+      "then": {
+        "properties": {
+          "authority": { "properties": { "ready_for_human_merge": { "const": true } } },
+          "execution": { "properties": { "state": { "enum": ["IDLE", "COMPLETED"] } } },
+          "recovery": { "properties": { "required": { "const": false } } },
+          "current_content_identity": { "$ref": "#/$defs/identifier" }
+        }
+      },
+      "else": {
+        "properties": {
+          "authority": { "properties": { "ready_for_human_merge": { "const": false } } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "recovery": { "properties": { "required": { "const": true } } } } },
+      "then": {
+        "properties": {
+          "authority": {
+            "properties": {
+              "review_eligible": { "const": false },
+              "ready_for_human_merge": { "const": false }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "execution": { "properties": { "state": { "const": "INTERRUPTED" } } } } },
+      "then": { "properties": { "recovery": { "properties": { "required": { "const": true } } } } }
+    }
+  ],
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "ordinal": { "type": "integer", "minimum": 1 },
+    "nullableIdentifier": { "anyOf": [{ "$ref": "#/$defs/identifier" }, { "type": "null" }] },
+    "nullableOrdinal": { "anyOf": [{ "$ref": "#/$defs/ordinal" }, { "type": "null" }] },
+    "role": { "enum": ["ORCHESTRATOR", "LEAD", "DEVELOPER", "QA", "REVIEWER"] },
+    "nullableRole": { "anyOf": [{ "$ref": "#/$defs/role" }, { "type": "null" }] },
+    "purpose": {
+      "enum": ["LEAD", "IMPLEMENT", "REMEDIATE", "FINALIZE_IMPLEMENTATION", "QA", "REVIEW", "FINALIZE_REVIEW", "RECOVER"]
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "digest": {
+      "type": "string",
+      "minLength": 71,
+      "maxLength": 71,
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cycle", "file", "digest"],
+      "properties": {
+        "cycle": { "$ref": "#/$defs/ordinal" },
+        "file": {
+          "description": "A safe JSON path relative to the run root, optionally under cycle-NNN; no traversal or absolute paths.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "^(cycle-[0-9]{3,}/)?[a-z0-9-]+\\.json$",
+          "not": { "pattern": "[^a-z0-9./\\-]" }
+        },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "nullableArtifactReference": {
+      "anyOf": [{ "$ref": "#/$defs/artifactReference" }, { "type": "null" }]
+    },
+    "execution": {
+      "description": "Current or most recent invocation's execution/attempt ownership and admission binding; no usage or result history.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "purpose", "execution_id", "attempt", "invocation_id", "binding", "cycle", "role", "invocation", "started_at"],
+      "properties": {
+        "state": { "enum": ["IDLE", "RUNNING", "COMPLETED", "INTERRUPTED", "FAILED", "CANCELLED"] },
+        "purpose": { "anyOf": [{ "$ref": "#/$defs/purpose" }, { "type": "null" }] },
+        "execution_id": { "$ref": "#/$defs/nullableIdentifier" },
+        "attempt": { "$ref": "#/$defs/nullableOrdinal" },
+        "invocation_id": { "$ref": "#/$defs/nullableIdentifier" },
+        "binding": {
+          "description": "Immutable pre-dispatch ownership/admission record, including reservation, policy, fencing and deadline bindings.",
+          "$ref": "#/$defs/nullableArtifactReference"
+        },
+        "cycle": { "$ref": "#/$defs/nullableOrdinal" },
+        "role": { "$ref": "#/$defs/nullableRole" },
+        "invocation": { "$ref": "#/$defs/nullableOrdinal" },
+        "started_at": { "anyOf": [{ "$ref": "#/$defs/timestamp" }, { "type": "null" }] }
+      },
+      "if": { "properties": { "state": { "const": "IDLE" } } },
+      "then": {
+        "properties": {
+          "purpose": { "type": "null" },
+          "execution_id": { "type": "null" },
+          "attempt": { "type": "null" },
+          "invocation_id": { "type": "null" },
+          "binding": { "type": "null" },
+          "cycle": { "type": "null" },
+          "role": { "type": "null" },
+          "invocation": { "type": "null" },
+          "started_at": { "type": "null" }
+        }
+      },
+      "else": {
+        "properties": {
+          "purpose": { "$ref": "#/$defs/purpose" },
+          "execution_id": { "$ref": "#/$defs/identifier" },
+          "attempt": { "$ref": "#/$defs/ordinal" },
+          "invocation_id": { "$ref": "#/$defs/identifier" },
+          "binding": { "$ref": "#/$defs/artifactReference" },
+          "cycle": { "$ref": "#/$defs/ordinal" },
+          "role": { "$ref": "#/$defs/role" },
+          "invocation": { "$ref": "#/$defs/ordinal" },
+          "started_at": { "$ref": "#/$defs/timestamp" }
+        }
+      }
+    }
+  }
+}

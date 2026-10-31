@@ -1,0 +1,21 @@
+{
+  "ProofID": "fixture-proof",
+  "RunID": "fixture-run",
+  "ContentIdentity": "fixture-content",
+  "Reason": "controller decision on exact durable evidence",
+  "Boundary": {},
+  "Evidence": [],
+  "Kind": "REVIEW_ADMISSION",
+  "Verdict": "ELIGIBLE",
+  "Review": {
+    "Completion": {
+      "ProofID": "fixture-parent",
+      "SHA256": "fixture-digest"
+    },
+    "Containment": {
+      "ProofID": "fixture-parent",
+      "SHA256": "fixture-digest"
+    },
+    "AdmissionID": "fixture-admission"
+  }
+}

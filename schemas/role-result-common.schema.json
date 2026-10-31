@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Role result reusable wire contracts",
+  "$comment": "Descriptive text: maximum 1024 Unicode code points. Identifiers and structural strings retain existing limits (at most 256).",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "resultID": {
+      "type": "string",
+      "maxLength": 256,
+      "pattern": "^res-c[0-9]{3,}-r[0-9]{3,}$",
+      "not": {"pattern": "[^a-z0-9-]"}
+    },
+    "findingID": {
+      "type": "string",
+      "maxLength": 256,
+      "pattern": "^fnd-[0-9]{6,}$",
+      "not": {"pattern": "[^a-z0-9-]"}
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "path": {"type": "string", "maxLength": 256, "minLength": 1},
+        "start_line": {"type": "integer", "minimum": 1},
+        "end_line": {"type": "integer", "minimum": 1}
+      },
+      "required": [
+        "path"
+      ],
+      "additionalProperties": false,
+      "dependentRequired": {
+        "end_line": [
+          "start_line"
+        ]
+      }
+    },
+    "evidenceRef": {
+      "type": "object",
+      "properties": {
+        "evidence_id": {"$ref": "#/$defs/identifier"},
+        "kind": {
+          "enum": ["test_result", "command_output", "diff", "source", "log", "other"]
+        },
+        "location": {"$ref": "#/$defs/location"}
+      },
+      "required": [
+        "evidence_id",
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evidenceRef"},
+      "uniqueItems": true
+    },
+    "finding": {
+      "type": "object",
+      "properties": {
+        "finding_id": {"$ref": "#/$defs/findingID"},
+        "finding_ordinal": {"type": "integer", "minimum": 1},
+        "origin_cycle": {"type": "integer", "minimum": 1},
+        "origin_result_id": {"$ref": "#/$defs/resultID"},
+        "blocking": {"type": "boolean"},
+        "summary": {"type": "string", "maxLength": 1024, "minLength": 1}
+      },
+      "required": [
+        "finding_id",
+        "finding_ordinal",
+        "origin_cycle",
+        "origin_result_id",
+        "blocking",
+        "summary"
+      ],
+      "additionalProperties": false
+    },
+    "findingOccurrence": {
+      "type": "object",
+      "properties": {
+        "finding_id": {"$ref": "#/$defs/findingID"},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"},
+        "locations": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/location"}
+        }
+      },
+      "required": [
+        "finding_id",
+        "evidence_refs"
+      ],
+      "additionalProperties": false
+    },
+    "qaCheck": {
+      "type": "object",
+      "properties": {
+        "check_id": {"$ref": "#/$defs/identifier"},
+        "required": {"type": "boolean"},
+        "outcome": {
+          "enum": ["passed", "failed", "inconclusive", "not_run"]
+        },
+        "summary": {"type": "string", "maxLength": 1024, "minLength": 1},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"}
+      },
+      "required": [
+        "check_id",
+        "required",
+        "outcome",
+        "summary",
+        "evidence_refs"
+      ],
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "outcome": {"const": "not_run"}
+        }
+      },
+      "else": {
+        "properties": {
+          "evidence_refs": {"minItems": 1}
+        }
+      }
+    },
+    "envelope": {
+      "type": "object",
+      "properties": {
+        "schema_version": {"const": 1},
+        "result_id": {"$ref": "#/$defs/resultID"},
+        "run_id": {"$ref": "#/$defs/identifier"},
+        "cycle": {"type": "integer", "minimum": 1},
+        "result_ordinal": {"type": "integer", "minimum": 1},
+        "execution_id": {"$ref": "#/$defs/identifier"},
+        "attempt_id": {"$ref": "#/$defs/identifier"},
+        "invocation_id": {"$ref": "#/$defs/identifier"},
+        "role": {
+          "enum": ["DEVELOPER", "QA", "REVIEWER"]
+        },
+        "content_identity": {"$ref": "#/$defs/identifier"},
+        "outcome": {"type": "string", "maxLength": 256, "minLength": 1},
+        "summary": {"type": "string", "maxLength": 1024, "minLength": 1},
+        "evidence_refs": {"$ref": "#/$defs/evidenceRefs"},
+        "produced_at": {"type": "string", "maxLength": 256, "format": "date-time"}
+      },
+      "required": [
+        "schema_version",
+        "result_id",
+        "run_id",
+        "cycle",
+        "result_ordinal",
+        "execution_id",
+        "attempt_id",
+        "invocation_id",
+        "role",
+        "content_identity",
+        "outcome",
+        "summary",
+        "evidence_refs",
+        "produced_at"
+      ]
+    }
+  }
+}

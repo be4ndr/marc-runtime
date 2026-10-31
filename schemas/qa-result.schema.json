@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Qa result",
+  "description": "Immutable invocation-bound semantic wire result. Runtime/process failures are not semantic outcomes. SQLite is persistence authority.",
+  "allOf": [
+    {"$ref": "role-result-common.schema.json#/$defs/envelope"}
+  ],
+  "type": "object",
+  "properties": {
+    "role": {"const": "QA"},
+    "outcome": {
+      "enum": ["passed", "failed", "inconclusive"]
+    },
+    "checks": {
+      "type": "array",
+      "items": {"$ref": "role-result-common.schema.json#/$defs/qaCheck"}
+    },
+    "finding_occurrences": {
+      "type": "array",
+      "items": {"$ref": "role-result-common.schema.json#/$defs/findingOccurrence"},
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "checks",
+    "finding_occurrences"
+  ],
+  "unevaluatedProperties": false
+}

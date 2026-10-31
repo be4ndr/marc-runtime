@@ -1,0 +1,9 @@
+{
+  "evidence_id": "proof",
+  "kind": "test_result",
+  "location": {
+    "path": "tests/example_test.go",
+    "start_line": 2,
+    "end_line": 1
+  }
+}

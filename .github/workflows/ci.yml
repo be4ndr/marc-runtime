@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    name: Linux Go ${{ matrix.go }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.25.0', '1.26.8']
+    env:
+      GOTOOLCHAIN: local
+      CGO_ENABLED: '0'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ matrix.go }}
+      - name: Download pinned dependencies
+        run: go mod download
+      - name: Test, vet and build offline
+        env:
+          GOPROXY: 'off'
+        run: |
+          go test ./... -count=1
+          go vet ./...
+          go build -o bin/ai-control-plane ./src/cmd/ai-control-plane
+      - name: Check documentation and whitespace
+        run: |
+          python3 scripts/check-docs.py
+          git diff --check
+      - name: Check tracked inputs remain unchanged
+        run: |
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - name: Focused race checks
+        if: matrix.go == '1.26.8'
+        env:
+          CGO_ENABLED: '1'
+          GOPROXY: 'off'
+        run: >-
+          go test -race ./src/internal/statestore ./src/internal/orchestrator
+          ./src/internal/mcp ./src/cmd/ai-control-plane
+          -run 'Test(MutationActor|MCPProtectedDataPreservesSQLiteLocks|ProtectedWorktree|MCPCommandGracefulShutdownAndRestart|B7RemediationResolutionRestartAndReplay)'
+          -count=1

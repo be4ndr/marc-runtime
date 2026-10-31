@@ -1,0 +1,14 @@
+{
+  "ProofID": "fixture-proof",
+  "RunID": "fixture-run",
+  "Kind": "RECOVERY",
+  "ContentIdentity": "fixture-content",
+  "Verdict": "UNCONFIRMED",
+  "Reason": "controller observed containment",
+  "Boundary": {},
+  "Evidence": [],
+  "Recovery": {
+    "Containment": "UNKNOWN",
+    "ContainmentEvidence": []
+  }
+}

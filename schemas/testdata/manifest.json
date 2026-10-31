@@ -1,0 +1,152 @@
+[
+  {
+    "file": "developer-completed.json",
+    "schema": "developer-result.schema.json",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "developer-incomplete.json",
+    "schema": "developer-result.schema.json",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "developer-blocked.json",
+    "schema": "developer-result.schema.json",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "qa-passed.json",
+    "schema": "qa-result.schema.json",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "qa-failed.json",
+    "schema": "qa-result.schema.json",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "qa-inconclusive.json",
+    "schema": "qa-result.schema.json",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "qa-not-run.json",
+    "schema": "qa-result.schema.json",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "reviewer-approved.json",
+    "schema": "reviewer-result.schema.json",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "reviewer-changes-required.json",
+    "schema": "reviewer-result.schema.json",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "reviewer-inconclusive.json",
+    "schema": "reviewer-result.schema.json",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "finding.json",
+    "schema": "role-result-common.schema.json#/$defs/finding",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "occurrence-later-result.json",
+    "schema": "role-result-common.schema.json#/$defs/findingOccurrence",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "evidence.json",
+    "schema": "role-result-common.schema.json#/$defs/evidenceRef",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "lead-qa-inconclusive.json",
+    "schema": "lead-state.schema.json",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "lead-review-inconclusive.json",
+    "schema": "lead-state.schema.json",
+    "valid": true,
+    "runtime_valid": true
+  },
+  {
+    "file": "invalid-completed-no-evidence.json",
+    "schema": "developer-result.schema.json",
+    "valid": false,
+    "runtime_valid": false
+  },
+  {
+    "file": "invalid-incomplete-no-work.json",
+    "schema": "developer-result.schema.json",
+    "valid": false,
+    "runtime_valid": false
+  },
+  {
+    "file": "invalid-blocked-no-blocker.json",
+    "schema": "developer-result.schema.json",
+    "valid": false,
+    "runtime_valid": false
+  },
+  {
+    "file": "invalid-check-shape.json",
+    "schema": "qa-result.schema.json",
+    "valid": false,
+    "runtime_valid": false
+  },
+  {
+    "file": "invalid-finding-cycle-id.json",
+    "schema": "role-result-common.schema.json#/$defs/finding",
+    "valid": false,
+    "runtime_valid": false
+  },
+  {
+    "file": "invalid-approved-inconclusive.json",
+    "schema": "lead-state.schema.json",
+    "valid": false,
+    "runtime_valid": false
+  },
+  {
+    "file": "invalid-qa-aggregate.json",
+    "schema": "qa-result.schema.json",
+    "valid": true,
+    "runtime_valid": false
+  },
+  {
+    "file": "invalid-line-range.json",
+    "schema": "role-result-common.schema.json#/$defs/evidenceRef",
+    "valid": true,
+    "runtime_valid": false
+  },
+  {
+    "file": "invalid-derived-result-id.json",
+    "schema": "developer-result.schema.json",
+    "valid": true,
+    "runtime_valid": false
+  },
+  {
+    "file": "invalid-derived-finding-id.json",
+    "schema": "role-result-common.schema.json#/$defs/finding",
+    "valid": true,
+    "runtime_valid": false
+  }
+]

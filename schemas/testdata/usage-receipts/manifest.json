@@ -1,0 +1,77 @@
+[
+  {
+    "file": "unknown.json",
+    "wire_valid": true,
+    "accepted": true
+  },
+  {
+    "file": "partial-null.json",
+    "wire_valid": true,
+    "accepted": true
+  },
+  {
+    "file": "partial-known.json",
+    "wire_valid": true,
+    "accepted": true
+  },
+  {
+    "file": "final.json",
+    "wire_valid": true,
+    "accepted": true
+  },
+  {
+    "file": "final-missing-cache.json",
+    "wire_valid": true,
+    "accepted": true
+  },
+  {
+    "file": "unknown-known.json",
+    "wire_valid": true,
+    "accepted": true
+  },
+  {
+    "file": "invalid-cache-subset.json",
+    "wire_valid": true,
+    "accepted": false
+  },
+  {
+    "file": "invalid-reasoning-subset.json",
+    "wire_valid": true,
+    "accepted": false
+  },
+  {
+    "file": "invalid-source.json",
+    "wire_valid": true,
+    "accepted": false
+  },
+  {
+    "file": "invalid-fraction.json",
+    "wire_valid": false,
+    "accepted": false
+  },
+  {
+    "file": "invalid-int64.json",
+    "wire_valid": false,
+    "accepted": false
+  },
+  {
+    "file": "invalid-extra.json",
+    "wire_valid": false,
+    "accepted": false
+  },
+  {
+    "file": "invalid-negative.json",
+    "wire_valid": false,
+    "accepted": false
+  },
+  {
+    "file": "invalid-duplicate.json",
+    "wire_valid": false,
+    "accepted": false
+  },
+  {
+    "file": "final-null.json",
+    "wire_valid": true,
+    "accepted": true
+  }
+]

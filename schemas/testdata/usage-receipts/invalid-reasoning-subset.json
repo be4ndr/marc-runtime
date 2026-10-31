@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "receipt_id": "wire-receipt",
+  "run_id": "r1",
+  "invocation_id": "i1",
+  "provider_call_id": "i1-call",
+  "source": "fake",
+  "model": "fake-model",
+  "reported_at": "2026-10-01T12:00:00Z",
+  "state": "unknown",
+  "input_tokens": null,
+  "cached_input_tokens": null,
+  "output_tokens": 1,
+  "reasoning_tokens": 2
+}

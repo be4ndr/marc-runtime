@@ -1,0 +1,20 @@
+{
+  "ProofID": "fixture-proof",
+  "RunID": "fixture-run",
+  "Kind": "RECOVERY",
+  "ContentIdentity": "fixture-content",
+  "Verdict": "RECOVERABLE",
+  "Reason": "controller observed containment",
+  "Boundary": {},
+  "Evidence": [],
+  "Recovery": {
+    "Containment": "CONFIRMED",
+    "ContainmentEvidence": [
+      {
+        "EvidenceID": "fixture-containment",
+        "Kind": "controller_containment",
+        "SHA256": "fixture-digest"
+      }
+    ]
+  }
+}

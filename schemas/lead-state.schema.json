@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lead state",
+  "description": "Current semantic wire/export snapshot of normalized SQLite state. It is not a history ledger or controller authority record.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "lead_state_id",
+    "run_id",
+    "cycle",
+    "producer",
+    "content_identity",
+    "goal",
+    "acceptance_criteria",
+    "open_findings",
+    "resolved_findings",
+    "qa",
+    "review",
+    "semantic_status",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "run_id": { "$ref": "#/$defs/identifier" },
+    "cycle": { "$ref": "#/$defs/ordinal" },
+    "producer": { "$ref": "#/$defs/producer" },
+    "content_identity": { "$ref": "#/$defs/identifier" },
+    "goal": { "type": "string", "maxLength": 1024, "minLength": 1 },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 1024, "minLength": 1 }
+    },
+    "open_findings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/openFinding" }
+    },
+    "resolved_findings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/resolvedFinding" }
+    },
+    "qa": { "$ref": "#/$defs/qaState" },
+    "review": { "$ref": "#/$defs/reviewState" },
+    "semantic_status": { "enum": ["active", "blocked", "approved"] },
+    "created_at": { "$ref": "#/$defs/timestamp" },
+    "lead_state_id": { "$ref": "#/$defs/identifier" }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "ordinal": { "type": "integer", "minimum": 1 },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["execution_id", "attempt", "invocation_id", "invocation"],
+      "properties": {
+        "execution_id": { "$ref": "#/$defs/identifier" },
+        "attempt": { "$ref": "#/$defs/ordinal" },
+        "invocation_id": { "$ref": "#/$defs/identifier" },
+        "invocation": { "$ref": "#/$defs/ordinal" }
+      }
+    },
+    "timestamp": { "type": "string", "maxLength": 256, "format": "date-time" },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "source_role",
+        "source_result_ref",
+        "content_identity",
+        "blocking",
+        "summary"
+      ],
+      "properties": {
+        "finding_id": { "$ref": "role-result-common.schema.json#/$defs/findingID" },
+        "source_role": { "enum": ["qa", "reviewer"] },
+        "source_result_ref": { "$ref": "#/$defs/resultReference" },
+        "content_identity": { "$ref": "#/$defs/identifier" },
+        "blocking": { "type": "boolean" },
+        "summary": { "type": "string", "maxLength": 1024, "minLength": 1 }
+      }
+    },
+    "openFinding": { "$ref": "#/$defs/finding" },
+    "resolvedFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "source_role",
+        "source_result_ref",
+        "content_identity",
+        "blocking",
+        "summary",
+        "resolution_ref"
+      ],
+      "properties": {
+        "finding_id": { "$ref": "role-result-common.schema.json#/$defs/findingID" },
+        "source_role": { "enum": ["qa", "reviewer"] },
+        "source_result_ref": { "$ref": "#/$defs/resultReference" },
+        "content_identity": { "$ref": "#/$defs/identifier" },
+        "blocking": { "type": "boolean" },
+        "summary": { "type": "string", "maxLength": 1024, "minLength": 1 },
+        "resolution_ref": { "$ref": "#/$defs/evidenceReference" }
+      }
+    },
+    "qaState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "enum": ["not_run", "passed", "failed", "inconclusive"]
+        },
+        "result_ref": { "$ref": "#/$defs/resultReference" }
+      }
+    },
+    "reviewState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "enum": ["not_run", "approved", "changes_required", "inconclusive"]
+        },
+        "result_ref": { "$ref": "#/$defs/resultReference" }
+      }
+    },
+    "resultReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result_id"],
+      "properties": {
+        "result_id": { "$ref": "role-result-common.schema.json#/$defs/resultID" }
+      }
+    },
+    "evidenceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id"],
+      "properties": {
+        "evidence_id": { "$ref": "#/$defs/identifier" }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "semantic_status": { "const": "approved" }
+        }
+      },
+      "then": {
+        "properties": {
+          "qa": {
+            "properties": {
+              "status": {
+                "not": { "const": "inconclusive" }
+              }
+            }
+          },
+          "review": {
+            "properties": {
+              "status": {
+                "not": { "const": "inconclusive" }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

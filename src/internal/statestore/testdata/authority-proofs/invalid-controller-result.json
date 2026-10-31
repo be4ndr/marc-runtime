@@ -1,0 +1,20 @@
+{
+  "ProofID": "fixture-proof",
+  "RunID": "fixture-run",
+  "ContentIdentity": "fixture-content",
+  "Reason": "controller decision on exact durable evidence",
+  "Boundary": {},
+  "Evidence": [],
+  "Kind": "CONTROLLER_VALIDATION",
+  "Verdict": "VALIDATED",
+  "Validation": {
+    "ResultID": "missing-result",
+    "ValidationEvidence": [
+      {
+        "EvidenceID": "fixture-validation",
+        "Kind": "controller_validation",
+        "SHA256": "fixture-digest"
+      }
+    ]
+  }
+}

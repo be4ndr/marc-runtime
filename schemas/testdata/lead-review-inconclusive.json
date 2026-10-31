@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "lead_state_id": "lead-snapshot2",
+  "run_id": "run1",
+  "cycle": 2,
+  "producer": {
+    "execution_id": "lead-execution2",
+    "attempt": 1,
+    "invocation_id": "lead-invocation2",
+    "invocation": 1
+  },
+  "content_identity": "content2",
+  "goal": "Complete bounded task.",
+  "acceptance_criteria": [
+    "Tests pass."
+  ],
+  "open_findings": [
+    {
+      "finding_id": "fnd-000005",
+      "source_role": "qa",
+      "source_result_ref": {
+        "result_id": "res-c001-r001"
+      },
+      "content_identity": "content1",
+      "blocking": true,
+      "summary": "Stable semantic issue."
+    }
+  ],
+  "resolved_findings": [],
+  "qa": {
+    "status": "passed",
+    "result_ref": {
+      "result_id": "res-c002-r003"
+    }
+  },
+  "review": {
+    "status": "inconclusive",
+    "result_ref": {
+      "result_id": "res-c002-r003"
+    }
+  },
+  "semantic_status": "active",
+  "created_at": "2026-10-05T12:00:00Z"
+}

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Developer result",
+  "description": "Immutable invocation-bound semantic wire result. Runtime/process failures are not semantic outcomes. SQLite is persistence authority.",
+  "allOf": [
+    {"$ref": "role-result-common.schema.json#/$defs/envelope"},
+    {
+      "if": {
+        "properties": {
+          "outcome": {"const": "completed"}
+        }
+      },
+      "then": {
+        "properties": {
+          "evidence_refs": {"minItems": 1},
+          "remaining_work": {"maxItems": 0}
+        },
+        "not": {
+          "required": [
+            "blocker"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {"const": "incomplete"}
+        }
+      },
+      "then": {
+        "properties": {
+          "remaining_work": {"minItems": 1}
+        },
+        "not": {
+          "required": [
+            "blocker"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {"const": "blocked"}
+        }
+      },
+      "then": {
+        "required": [
+          "blocker"
+        ]
+      }
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "role": {"const": "DEVELOPER"},
+    "outcome": {
+      "enum": ["completed", "incomplete", "blocked"]
+    },
+    "remaining_work": {
+      "type": "array",
+      "items": {"type": "string", "maxLength": 1024, "minLength": 1}
+    },
+    "blocker": {
+      "type": "object",
+      "properties": {
+        "summary": {"type": "string", "maxLength": 1024, "minLength": 1},
+        "evidence_refs": {"$ref": "role-result-common.schema.json#/$defs/evidenceRefs"}
+      },
+      "required": [
+        "summary",
+        "evidence_refs"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "remaining_work"
+  ],
+  "unevaluatedProperties": false
+}
