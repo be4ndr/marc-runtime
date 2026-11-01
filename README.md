@@ -27,7 +27,8 @@ Read [Security](SECURITY.md) before connecting a client.
 - [Release validation and packaging](docs/release.md)
 - [v0.1.0 Technical Preview notes (draft)](docs/release-v0.1.0.md)
 
-Linux, Git and Go 1.25 or later are required. Build from this checkout:
+Linux, Git and Go 1.27.0 or later are required. Go 1.27.3 is the validated
+toolchain used by CI. Build from this checkout:
 
 ```sh
 go mod download

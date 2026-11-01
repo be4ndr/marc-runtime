@@ -85,7 +85,14 @@ func TestFreshInitializationAndRestart(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(dir, DatabaseName)); err != nil {
 		t.Fatal(err)
 	}
-	if s.Info().SQLiteVersion != "3.51.3" || s.Info().SchemaVersion != 1 {
+	var runtimeVersion string
+	if err := s.db.QueryRow("SELECT sqlite_version()").Scan(&runtimeVersion); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateSQLiteVersion(runtimeVersion); err != nil {
+		t.Fatal(err)
+	}
+	if s.Info().SQLiteVersion != runtimeVersion || s.Info().SchemaVersion != 1 {
 		t.Fatalf("unexpected runtime: %+v", s.Info())
 	}
 	t.Logf("SQLite runtime %s", s.Info().SQLiteVersion)
@@ -560,7 +567,7 @@ func TestLocalStorageAndVersionGuards(t *testing.T) {
 			t.Fatal("unsafe version accepted", version)
 		}
 	}
-	for _, version := range []string{"3.51.3", "3.53.0"} {
+	for _, version := range []string{"3.51.3", "3.53.0", "3.54.1"} {
 		if err := validateSQLiteVersion(version); err != nil {
 			t.Fatal(err)
 		}
