@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   core:
     name: Linux Go ${{ matrix.go }}
@@ -29,13 +33,21 @@ jobs:
           go-version: ${{ matrix.go }}
       - name: Download pinned dependencies
         run: go mod download
+      - name: Check gofmt
+        run: |
+          unformatted=$(git ls-files -z '*.go' | xargs -0 gofmt -l)
+          if [ -n "$unformatted" ]; then
+            printf 'Run gofmt on:\n%s\n' "$unformatted"
+            exit 1
+          fi
       - name: Test, vet and build offline
         env:
           GOPROXY: 'off'
+          MARC_TEST_BINARY: ${{ github.workspace }}/bin/marc
         run: |
+          go build -o bin/marc ./src/cmd/marc
           go test ./... -count=1
           go vet ./...
-          go build -o bin/marc ./src/cmd/marc
       - name: Check documentation and whitespace
         run: |
           python3 scripts/check-docs.py
