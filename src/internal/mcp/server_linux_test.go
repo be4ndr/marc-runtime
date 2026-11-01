@@ -14,11 +14,12 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/santhosh-tekuri/jsonschema/v6"
 	"marc-runtime/src/internal/orchestrator"
 	"marc-runtime/src/internal/roleresult"
 	"marc-runtime/src/internal/statestore"
-	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
 func TestMCPProcess(t *testing.T) {
@@ -53,7 +54,14 @@ type testClient struct {
 
 func client(t *testing.T, data string) *testClient {
 	t.Helper()
-	c := &testClient{cmd: exec.Command(os.Args[0], "-test.run=^TestMCPProcess$")}
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	t.Cleanup(cancel)
+	c := &testClient{cmd: exec.CommandContext(ctx, os.Args[0], "-test.run=^TestMCPProcess$")}
+	// CI reuses these workflow/replay assertions against the production entrypoint.
+	// Unit and race runs retain the instrumented test helper by default.
+	if binary := os.Getenv("MARC_TEST_BINARY"); binary != "" {
+		c.cmd = exec.CommandContext(ctx, binary, "--mcp", "--data-dir", data)
+	}
 	c.cmd.Env = append(os.Environ(), "ACP_MCP_TEST_CHILD=1", "ACP_MCP_TEST_DATA="+data)
 	c.cmd.Stderr = &c.stderr
 	var err error

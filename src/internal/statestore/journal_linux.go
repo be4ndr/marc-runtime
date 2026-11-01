@@ -1,11 +1,11 @@
 package statestore
 
 import (
-	"marc-runtime/internal/numeric"
 	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"marc-runtime/internal/numeric"
 	"strings"
 
 	"marc-runtime/internal/identity"

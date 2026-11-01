@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/santhosh-tekuri/jsonschema/v6"
 	"marc-runtime/src/internal/orchestrator"
 	"marc-runtime/src/internal/statestore"
-	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
 func TestMCPPublishedTextLimits(t *testing.T) {

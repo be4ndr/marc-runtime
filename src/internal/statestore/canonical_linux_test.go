@@ -1,12 +1,12 @@
 package statestore
 
 import (
-	"marc-runtime/internal/identity"
-	"marc-runtime/src/internal/roleresult"
 	"crypto/sha256"
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"marc-runtime/internal/identity"
+	"marc-runtime/src/internal/roleresult"
 	"reflect"
 	"testing"
 )

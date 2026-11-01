@@ -3,9 +3,9 @@
 package roleresult
 
 import (
-	"marc-runtime/internal/identity"
 	"encoding/json"
 	"fmt"
+	"marc-runtime/internal/identity"
 
 	"marc-runtime/schemas"
 )
