@@ -1,0 +1,68 @@
+name: Release validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Linux release gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GOTOOLCHAIN: local
+      TMPDIR: ${{ github.workspace }}/.private/release-validation/tmp
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: '1.27.3'
+      - name: Prepare durable test storage and dependencies
+        run: |
+          mkdir -p "$TMPDIR"
+          go mod download
+          go mod verify
+      - name: Full race suite including MCP subprocesses
+        env:
+          CGO_ENABLED: '1'
+          GOPROXY: 'off'
+        run: |
+          go test -race -p 1 ./... -count=1 -timeout=45m
+          go vet ./...
+      - name: Repeat SQLite recovery and concurrency gates
+        env:
+          CGO_ENABLED: '1'
+          GOPROXY: 'off'
+        run: >-
+          go test -race -p 1 ./src/internal/statestore ./src/internal/mcp
+          -run '^Test(SQLiteMultiprocessDurabilityAndRecovery|SQLiteSecurityPreservesPOSIXLocks|JournalConcurrentBatchesStayTogether|MCPSharedDatabasePeerExitAndRestart|MCPProtectedDataPreservesSQLiteLocks)$'
+          -count=3 -timeout=10m
+      - name: Build twice and compare Linux archives and checksums
+        run: |
+          bash scripts/build-release.sh .private/release-validation/first
+          bash scripts/build-release.sh .private/release-validation/second
+          for file in marc_v0.1.0_linux_amd64.tar.gz marc_v0.1.0_linux_arm64.tar.gz SHA256SUMS; do
+            cmp ".private/release-validation/first/$file" ".private/release-validation/second/$file"
+          done
+          cd .private/release-validation/first
+          sha256sum -c SHA256SUMS
+      - name: Smoke test the packaged native binary with existing CLI and MCP tests
+        env:
+          CGO_ENABLED: '0'
+          GOPROXY: 'off'
+          MARC_TEST_BINARY: ${{ github.workspace }}/.private/release-validation/first/marc_v0.1.0_linux_amd64/marc
+        run: |
+          tar -xzf .private/release-validation/first/marc_v0.1.0_linux_amd64.tar.gz -C .private/release-validation/first
+          go test ./src/cmd/marc ./src/internal/mcp -count=1 -timeout=10m
+      - name: Check documentation, formatting and clean inputs
+        run: |
+          test -z "$(git ls-files -z '*.go' | xargs -0 gofmt -l)"
+          python3 scripts/check-docs.py
+          bash -n scripts/build-release.sh
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      # Deliberately no upload, release, tag or write permission.

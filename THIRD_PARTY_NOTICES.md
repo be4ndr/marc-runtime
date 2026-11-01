@@ -35,8 +35,8 @@ a module download does not make them project-owned Apache-2.0 material.
 
 ## Go runtime
 
-The local preview build uses Go 1.26.8. Its BSD-3-Clause text is preserved in
-[Go LICENSE](third_party/licenses/go/go1.26.8/LICENSE). Keep applicable Go and
+The local preview build uses Go 1.27.3. Its BSD-3-Clause text is preserved in
+[Go LICENSE](third_party/licenses/go/go1.27.3/LICENSE). Keep applicable Go and
 dependency notices with any redistributed compiled binary. Recheck the exact
 build inputs when changing toolchains, modules, platform or packaging.
 
