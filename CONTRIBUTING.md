@@ -24,11 +24,14 @@ python3 scripts/check-docs.py
 git diff --check
 ```
 
-Python 3 is needed for documentation checks. CI tests Linux with Go 1.25.0 and
-1.26.8; the latter also runs focused race checks, requiring CGO and a C compiler.
+Go 1.27.0 is the minimum supported version; use Go 1.27.3 for CI and release
+validation. Python 3 is needed for documentation checks. CI tests Linux with
+Go 1.27.3 and runs focused race checks, requiring CGO and a C compiler.
 CI acquires dependencies before running core checks offline. It has read-only
 repository permission and cancels outdated runs for the same pull request.
-The existing Linux Go matrix check names are preserved.
+The required check is `Linux Go 1.27.3`. When adopting this upgrade, replace
+`Linux Go 1.25.0` and `Linux Go 1.26.8` in the GitHub Ruleset's required status
+checks with `Linux Go 1.27.3` from GitHub Actions.
 
 The suite uses `MARC_TEST_BINARY` to smoke-test the built CLI's readiness,
 SIGINT/SIGTERM shutdown, fake workflow and resume. Existing MCP subprocess tests

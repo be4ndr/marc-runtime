@@ -2,7 +2,8 @@
 
 ## Requirements
 
-Use Linux, Git on PATH and Go 1.25 or later. WSL2 is supported with source/data
+Use Linux, Git on PATH and Go 1.27.0 or later. Go 1.27.3 is the validated
+toolchain used by CI. WSL2 is supported with source/data
 on the Linux filesystem. SQLite is pure Go; CGO and a SQLite CLI are unnecessary.
 Python 3 is needed only for the documentation checker.
 
