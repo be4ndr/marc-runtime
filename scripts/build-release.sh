@@ -8,7 +8,7 @@ unset GOARM GOMIPS GOMIPS64 GOPPC64 GORISCV64
 
 cd "$(dirname "$0")/.."
 version=v0.1.0
-toolchain=go1.26.8
+toolchain=go1.27.3
 if [[ $(go env GOVERSION) != "$toolchain" ]]; then
   echo "Release builds require $toolchain; install it and download dependencies first." >&2
   exit 1

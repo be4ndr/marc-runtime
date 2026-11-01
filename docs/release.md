@@ -12,7 +12,7 @@ dispatch workflow must exist on the default branch before GitHub exposes its
 manual trigger. After merge, run it again against the intended release commit
 and retain the run URL and commit identity in the release review.
 
-The workflow uses Go 1.26.8 on Ubuntu 24.04 and read-only repository permission.
+The workflow uses Go 1.27.3 on Ubuntu 24.04 and read-only repository permission.
 It downloads pinned dependencies before running tests and builds offline:
 
 1. Run `go test -race -p 1 ./... -count=1`. Package serialization limits resource
@@ -38,7 +38,7 @@ Nothing is uploaded by this workflow; failed checks block its success.
 
 ## Reproducible local packaging
 
-Use a clean source checkout, Linux, Git, Go **1.26.8**, GNU tar, gzip and GNU
+Use a clean source checkout, Linux, Git, Go **1.27.3**, GNU tar, gzip and GNU
 coreutils. Race validation additionally requires a C compiler. Dependencies must
 already be cached. `.private/` must be on durable local Linux storage for tests.
 
@@ -67,7 +67,7 @@ build directories on one host, not independent machines or toolchain bootstrap.
 Require a successful hosted release-validation run for the final commit, review
 the checksums and archive contents, and review the draft notes against that run.
 Verify native arm64 operation separately before claiming that architecture has
-runtime coverage. Existing daily CI still checks Go 1.25.0 compatibility.
+runtime coverage. Daily CI and release validation use Go 1.27.3; the minimum supported\nversion is Go 1.27.0.
 Private vulnerability reporting and branch protection are repository settings;
 the release workflow does not reconfigure or attest them. No signing or
 provenance attestation is prepared by this process.
