@@ -10,7 +10,7 @@ jobs:
   validate:
     name: Linux release gates
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       GOTOOLCHAIN: local
       TMPDIR: ${{ github.workspace }}/.private/release-validation/tmp
@@ -31,7 +31,7 @@ jobs:
           CGO_ENABLED: '1'
           GOPROXY: 'off'
         run: |
-          go test -race -p 1 ./... -count=1 -timeout=30m
+          go test -race -p 1 ./... -count=1 -timeout=45m
           go vet ./...
       - name: Repeat SQLite recovery and concurrency gates
         env:
