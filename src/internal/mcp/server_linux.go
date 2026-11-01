@@ -14,10 +14,10 @@ import (
 	"sync"
 	"unicode/utf8"
 
+	"github.com/santhosh-tekuri/jsonschema/v6"
 	"marc-runtime/internal/identity"
 	"marc-runtime/schemas"
 	"marc-runtime/src/internal/orchestrator"
-	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
 type request struct {

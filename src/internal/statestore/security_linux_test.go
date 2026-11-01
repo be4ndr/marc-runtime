@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
+	"golang.org/x/sys/unix"
 	"marc-runtime/internal/identity"
 	"marc-runtime/src/internal/roleresult"
-	"golang.org/x/sys/unix"
 )
 
 func TestSecurityJSONRejectionIsAtomic(t *testing.T) {

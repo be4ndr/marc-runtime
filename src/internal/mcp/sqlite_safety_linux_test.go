@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
+	"golang.org/x/sys/unix"
 	"marc-runtime/src/internal/orchestrator"
 	"marc-runtime/src/internal/statestore"
-	"golang.org/x/sys/unix"
 )
 
 // Probe from a separate process: opening/closing these files in the MCP

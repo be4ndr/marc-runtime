@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/santhosh-tekuri/jsonschema/v6"
 	"marc-runtime/schemas"
 	"marc-runtime/src/internal/roleresult"
-	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
 func TestFindingRejectsInvalidTypedUTF8BeforeMarshal(t *testing.T) {

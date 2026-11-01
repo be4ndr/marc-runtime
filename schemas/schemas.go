@@ -11,8 +11,8 @@ import (
 	"sync"
 	"unicode/utf8"
 
-	"marc-runtime/internal/identity"
 	"github.com/santhosh-tekuri/jsonschema/v6"
+	"marc-runtime/internal/identity"
 )
 
 //go:embed *.schema.json

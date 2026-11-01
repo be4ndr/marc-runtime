@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
+	"golang.org/x/sys/unix"
 	"marc-runtime/src/internal/app"
 	"marc-runtime/src/internal/statestore"
-	"golang.org/x/sys/unix"
 )
 
 func protectedWorktreeFixture(t *testing.T, defaultDir bool) (context.Context, *statestore.StateStore, *Runtime, string, string) {

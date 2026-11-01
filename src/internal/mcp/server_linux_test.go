@@ -15,10 +15,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/santhosh-tekuri/jsonschema/v6"
 	"marc-runtime/src/internal/orchestrator"
 	"marc-runtime/src/internal/roleresult"
 	"marc-runtime/src/internal/statestore"
-	"github.com/santhosh-tekuri/jsonschema/v6"
 )
 
 func TestMCPProcess(t *testing.T) {

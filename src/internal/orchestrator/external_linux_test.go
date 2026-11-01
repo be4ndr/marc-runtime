@@ -1,7 +1,6 @@
 package orchestrator
 
 import (
-	"marc-runtime/internal/identity"
 	"bytes"
 	"context"
 	"crypto/sha256"
@@ -9,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"marc-runtime/internal/identity"
 	"os"
 	"os/exec"
 	"path/filepath"
