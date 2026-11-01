@@ -41,6 +41,8 @@ leave it unset to retain race instrumentation in MCP subprocesses. The full suit
 continues to cover StateStore and Orchestrator restart/replay and authority
 regressions. No external AI provider or model credentials are needed.
 
-CI has no publication step. Full release testing and label-based CI remain
-deferred. Hosted execution requires separate verification. Report security issues
-through [Security](SECURITY.md).
+CI has no publication step. The manually triggered
+[release validation workflow](docs/release.md) runs full race testing, repeated
+SQLite recovery/concurrency checks and reproducible Linux packaging. Label-based
+CI remains deferred. Hosted execution requires separate verification. Report
+security issues through [Security](SECURITY.md).
