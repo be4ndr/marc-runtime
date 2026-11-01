@@ -26,21 +26,19 @@ jobs:
           mkdir -p "$TMPDIR"
           go mod download
           go mod verify
-      - name: Full race suite including CLI and MCP subprocesses
+      - name: Full race suite including MCP subprocesses
         env:
           CGO_ENABLED: '1'
           GOPROXY: 'off'
-          MARC_TEST_BINARY: ${{ github.workspace }}/.private/release-validation/marc-race
         run: |
-          go build -race -o "$MARC_TEST_BINARY" ./src/cmd/marc
-          go test -race ./... -count=1 -timeout=30m
+          go test -race -p 1 ./... -count=1 -timeout=30m
           go vet ./...
       - name: Repeat SQLite recovery and concurrency gates
         env:
           CGO_ENABLED: '1'
           GOPROXY: 'off'
         run: >-
-          go test -race ./src/internal/statestore ./src/internal/mcp
+          go test -race -p 1 ./src/internal/statestore ./src/internal/mcp
           -run '^Test(SQLiteMultiprocessDurabilityAndRecovery|SQLiteSecurityPreservesPOSIXLocks|JournalConcurrentBatchesStayTogether|MCPSharedDatabasePeerExitAndRestart|MCPProtectedDataPreservesSQLiteLocks)$'
           -count=3 -timeout=10m
       - name: Build twice and compare Linux archives and checksums

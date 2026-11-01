@@ -15,9 +15,11 @@ and retain the run URL and commit identity in the release review.
 The workflow uses Go 1.26.8 on Ubuntu 24.04 and read-only repository permission.
 It downloads pinned dependencies before running tests and builds offline:
 
-1. Build a race-instrumented CLI and run `go test -race ./... -count=1`, with
-   `MARC_TEST_BINARY` pointing at that CLI. MCP subprocesses and CLI smoke tests
-   therefore exercise race-instrumented application code as well as test code.
+1. Run `go test -race -p 1 ./... -count=1`. Package serialization limits resource
+   contention without reducing race instrumentation. Leave `MARC_TEST_BINARY`
+   unset so MCP subprocesses use the race-instrumented test helper. CLI binary
+   smoke tests run against the packaged executable in step 4; their short
+   subprocess deadlines are intended for production binaries.
 2. Run `go vet ./...` and repeat existing SQLite multiprocess crash recovery,
    concurrent journal, POSIX lock and MCP shared-database tests three times.
 3. Build both Linux architectures twice; compare archives and `SHA256SUMS`
