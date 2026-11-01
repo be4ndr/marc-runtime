@@ -3,7 +3,7 @@
 set -euo pipefail
 export LC_ALL=C TZ=UTC GOTOOLCHAIN=local GOPROXY=off
 export CGO_ENABLED=0 GOOS=linux GOAMD64=v1 GOARM64=v8.0
-export GOFLAGS= GOEXPERIMENT=
+export GOENV=off GOWORK=off GOFIPS140=off GOFLAGS= GOEXPERIMENT=
 unset GOARM GOMIPS GOMIPS64 GOPPC64 GORISCV64
 
 cd "$(dirname "$0")/.."
@@ -32,11 +32,9 @@ for arch in amd64 arm64; do
   mkdir -p "$stage/docs"
   GOARCH=$arch go build -mod=readonly -trimpath -buildvcs=false \
     -ldflags='-buildid=' -o "$stage/marc" ./src/cmd/marc
-  cp LICENSE COPYRIGHT THIRD_PARTY_NOTICES.md SECURITY.md "$stage/"
-  cp docs/usage.md docs/mcp.md "$stage/docs/"
-  cp -R third_party "$stage/"
-  mkdir -p "$stage/schemas"
-  cp schemas/*.schema.json "$stage/schemas/"
+  # Copy committed distribution inputs only, including all third-party notices.
+  git archive HEAD LICENSE COPYRIGHT THIRD_PARTY_NOTICES.md SECURITY.md \
+    docs/usage.md docs/mcp.md third_party 'schemas/*.schema.json' | tar -x -C "$stage"
   printf 'version=%s\nrevision=%s\ngo=%s\nos=linux\narch=%s\nCGO_ENABLED=0\nSOURCE_DATE_EPOCH=%s\n' \
     "$version" "$revision" "$toolchain" "$arch" "$epoch" > "$stage/BUILD-INFO"
   chmod 0755 "$stage/marc"
