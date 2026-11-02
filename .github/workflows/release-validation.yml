@@ -67,3 +67,53 @@ jobs:
           git diff --check
           test -z "$(git status --porcelain --untracked-files=normal)"
       # Deliberately no upload, release, tag or write permission.
+
+  arm64:
+    name: Native Linux ARM64
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    env:
+      GOTOOLCHAIN: local
+      CGO_ENABLED: '0'
+      TMPDIR: ${{ github.workspace }}/.private/release-validation-arm64/tmp
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Prepare durable test storage
+        run: mkdir -p "$TMPDIR"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: '1.27.3'
+      - name: Verify native ARM64 toolchain
+        run: |
+          test "$(uname -m)" = aarch64
+          test "$(go env GOHOSTARCH)" = arm64
+          test "$(go env GOARCH)" = arm64
+          go version
+      - name: Download and verify dependencies
+        run: |
+          go mod download
+          go mod verify
+      - name: Native tests including SQLite recovery and workflow restart/replay
+        env:
+          GOPROXY: 'off'
+        run: |
+          go test ./... -count=1 -timeout=15m
+          go vet ./...
+      - name: Build release archives and verify checksums
+        run: |
+          bash scripts/build-release.sh .private/release-validation-arm64/package
+          cd .private/release-validation-arm64/package
+          sha256sum -c SHA256SUMS
+          tar -xzf marc_v0.1.0_linux_arm64.tar.gz
+          grep -Fx 'arch=arm64' marc_v0.1.0_linux_arm64/BUILD-INFO
+      - name: Smoke test the packaged ARM64 binary with existing CLI and MCP tests
+        env:
+          GOPROXY: 'off'
+          MARC_TEST_BINARY: ${{ github.workspace }}/.private/release-validation-arm64/package/marc_v0.1.0_linux_arm64/marc
+        run: go test ./src/cmd/marc ./src/internal/mcp -count=1 -timeout=10m
+      - name: Check inputs remain unchanged
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"

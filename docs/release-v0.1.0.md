@@ -51,7 +51,7 @@ see [usage](usage.md) and the [MCP interface](mcp.md).
 - No automatic merge, push, process supervision or destructive cleanup.
 - Network/FUSE/9p, tmpfs/ramfs and WSL Windows storage are rejected. Use durable
   Linux storage, including under WSL2.
-- arm64 archives are cross-compiled; this validation workflow executes amd64
-  binaries only. Native arm64 runtime validation remains outstanding.
+- Native arm64 support requires a successful ARM64 release-validation job for
+  the intended release commit; cross-compilation alone does not verify it.
 
 Read [Security](../SECURITY.md) before connecting an external client.
