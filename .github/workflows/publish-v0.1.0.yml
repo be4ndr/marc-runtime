@@ -1,0 +1,215 @@
+name: Publish validated MARC v0.1.0
+'on':
+  push:
+    branches:
+    - release/publish-v0.1.0
+permissions:
+  contents: read
+concurrency:
+  group: publish-marc-v0.1.0
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'be4ndr/marc-runtime' && github.ref == 'refs/heads/release/publish-v0.1.0'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GOTOOLCHAIN: local
+      CGO_ENABLED: '0'
+      TMPDIR: ${{ github.workspace }}/.private/publication/tmp
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        ref: 6a03973134e867a2ab1e51e3a8530f7f00840432
+        persist-credentials: false
+    - name: Prepare durable build storage
+      run: |
+        mkdir -p "$TMPDIR"
+        test "$(git rev-parse HEAD)" = 6a03973134e867a2ab1e51e3a8530f7f00840432
+    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      with:
+        go-version: 1.27.3
+    - name: Download and verify pinned dependencies
+      run: |
+        go mod download
+        go mod verify
+    - name: Reproduce the locally verified release archives
+      env:
+        EXPECTED_SHA256SUMS: |
+          3717228f4e1be01dc17b8ae3edb743e03392a3cd5d07fa211b89814e81abfaf1  marc_v0.1.0_linux_amd64.tar.gz
+          b208d224f193f57cbfc9bcbf2857ab8879eccc63662200132ad4655b5ab324fa  marc_v0.1.0_linux_arm64.tar.gz
+      run: |
+        bash scripts/build-release.sh .private/publication/first
+        bash scripts/build-release.sh .private/publication/second
+        for file in marc_v0.1.0_linux_amd64.tar.gz marc_v0.1.0_linux_arm64.tar.gz SHA256SUMS; do
+          cmp ".private/publication/first/$file" ".private/publication/second/$file"
+        done
+        printf '%s' "$EXPECTED_SHA256SUMS" > .private/publication/expected-checksums
+        cmp .private/publication/expected-checksums .private/publication/first/SHA256SUMS
+        cd .private/publication/first
+        sha256sum -c SHA256SUMS
+        tar -xzf marc_v0.1.0_linux_amd64.tar.gz
+    - name: Verify the packaged executable and unchanged source
+      env:
+        GOPROXY: 'off'
+        MARC_TEST_BINARY: ${{ github.workspace }}/.private/publication/first/marc_v0.1.0_linux_amd64/marc
+      run: |
+        go test ./src/cmd/marc ./src/internal/mcp -count=1 -timeout=10m
+        go vet ./...
+        python3 scripts/check-docs.py
+        git diff --check
+        test -z "$(git status --porcelain --untracked-files=normal)"
+    - name: Stage, download-verify and publish the pre-release
+      env:
+        GH_TOKEN: ${{ github.token }}
+        RELEASE_NOTES: |
+          # MARC v0.1.0 Technical Preview
+
+          MARC is a local Linux control plane for coding-agent workflows. This pre-release
+          supports Linux AMD64 (x86-64) and ARM64 (AArch64), verified on native runners.
+
+          ## Verified features
+
+          - Sequential Lead → Developer → Lead → QA → Lead → Reviewer → Lead workflows,
+            bounded remediation and explicit Finding resolution.
+          - SQLite persistence, concurrent writers, crash recovery and exact restart/replay.
+          - Orchestrator-only authoritative mutations, role isolation, stale-result rejection,
+            worktree capture and proof-bound readiness.
+          - Local stdio MCP tools and a deterministic fake workflow requiring no model access.
+
+          Readiness ends at `READY_FOR_HUMAN_MERGE`; merge and push remain human actions.
+          External client usage is reported as `excluded`, outside MARC token admission and
+          accounting. Managed-provider execution is unavailable.
+
+          ## Installation
+
+          Download `SHA256SUMS` and the archive matching your Linux CPU from this release.
+          For AMD64:
+
+          ```sh
+          sha256sum --ignore-missing -c SHA256SUMS
+          tar -xzf marc_v0.1.0_linux_amd64.tar.gz
+          mkdir -p "$HOME/.local/bin"
+          install -m 0755 marc_v0.1.0_linux_amd64/marc "$HOME/.local/bin/marc"
+          ```
+
+          For ARM64, substitute `arm64` for `amd64`. Ensure the matching archive reports
+          `OK` before extraction. Git and durable local Linux storage are required at
+          runtime; Go and CGO are unnecessary for the packaged binary. `BUILD-INFO` records
+          the source revision and Go toolchain; the CLI has no `--version` flag.
+
+          See [usage and configuration](https://github.com/be4ndr/marc-runtime/blob/v0.1.0/docs/usage.md)
+          and the [MCP interface](https://github.com/be4ndr/marc-runtime/blob/v0.1.0/docs/mcp.md)
+          for a fake-workflow example and client registration.
+
+          ## Validation and source
+
+          Built from validated commit `6a03973134e867a2ab1e51e3a8530f7f00840432` with Go 1.27.3.
+          [Release Validation #41521882676](https://github.com/be4ndr/marc-runtime/actions/runs/41521882676)
+          passed AMD64 full-race tests, repeated SQLite recovery/concurrency checks, workflow
+          restart/replay, native ARM64 tests, and packaged CLI/MCP smoke tests on both
+          architectures. Linux archives and checksums were reproduced byte-for-byte on the
+          AMD64 runner. These checks do not attest a live external client's model requests
+          or claimed coding/test execution.
+
+          ## Known limitations
+
+          - Technical Preview: no stable API, database upgrade/import path or long-term
+            support commitment. Earlier pre-release schema checksums may be rejected.
+          - Trusted local Linux host only: no hostile same-user sandbox, remote MCP
+            authentication, multi-user isolation or application-level encryption.
+          - External model identity, fresh role contexts and claimed test execution remain
+            operator responsibilities. No automatic merge, push, process supervision or
+            destructive cleanup is provided.
+          - Network/FUSE/9p, tmpfs/ramfs and WSL Windows storage are rejected. WSL2 requires
+            durable Linux storage.
+          - Checksums detect corruption; they are not signatures. No signed provenance
+            attestation is included.
+
+          Read [Security](https://github.com/be4ndr/marc-runtime/blob/v0.1.0/SECURITY.md)
+          before connecting an external client. Licensed under Apache-2.0; dependency and Go
+          license notices are bundled with both archives.
+      run: |
+        python3 - <<'PY'
+        import hashlib
+        import json
+        import os
+        from pathlib import Path
+        import subprocess
+
+        repo = "be4ndr/marc-runtime"
+        tag = "v0.1.0"
+        commit = "6a03973134e867a2ab1e51e3a8530f7f00840432"
+        expected_tag_sha = "eb036476d2b48621267b3f24935a6f1abeb0cb37"
+        title = "MARC v0.1.0 Technical Preview"
+        root = Path(".private/publication")
+        notes = root / "release-notes.md"
+        notes.write_text(os.environ["RELEASE_NOTES"])
+        expected_body = notes.read_text().strip()
+        names = ["marc_v0.1.0_linux_amd64.tar.gz", "marc_v0.1.0_linux_arm64.tar.gz", "SHA256SUMS"]
+
+        def command(*args):
+            return subprocess.run(["gh", *args], check=True)
+
+        def data(*args):
+            return json.loads(subprocess.check_output(["gh", *args], text=True))
+
+        def release():
+            return data("release", "view", tag, "--repo", repo, "--json", "isDraft,isPrerelease,targetCommitish,tagName,name,body,assets,url")
+
+        ref = data("api", f"repos/{repo}/git/ref/tags/{tag}")
+        assert ref["object"]["type"] == "tag" and ref["object"]["sha"] == expected_tag_sha, "Annotated tag changed"
+        annotation = data("api", f"repos/{repo}/git/tags/{expected_tag_sha}")
+        assert annotation["object"]["type"] == "commit" and annotation["object"]["sha"] == commit, "Wrong tag target"
+        validation = data("api", f"repos/{repo}/actions/runs/41521882676")
+        assert validation["head_sha"] == commit and validation["head_branch"] == "main", "Wrong validation source"
+        assert validation["status"] == "completed" and validation["conclusion"] == "success", "Release validation did not pass"
+        jobs = data("api", f"repos/{repo}/actions/runs/41521882676/jobs")
+        passed = {j["name"]: j["conclusion"] for j in jobs["jobs"]}
+        assert passed.get("Linux release gates") == passed.get("Native Linux ARM64") == "success", "Both architectures must pass"
+
+        probe = subprocess.run(["gh", "release", "view", tag, "--repo", repo], capture_output=True, text=True)
+        if probe.returncode != 0:
+            command("release", "create", tag, "--repo", repo, "--verify-tag", "--target", commit,
+                    "--title", title, "--notes-file", str(notes), "--draft", "--prerelease", "--latest=false")
+        r = release()
+        assert r["tagName"] == tag and r["targetCommitish"] == commit and r["name"] == title
+        assert r["isPrerelease"] and r["body"].strip() == expected_body, "Unexpected existing release; refusing to overwrite"
+        existing = {a["name"] for a in r["assets"]}
+        assert existing <= set(names), "Unexpected existing assets; refusing to overwrite"
+        for name in names:
+            if name not in existing:
+                assert r["isDraft"], "Published release is missing assets; refusing to modify it"
+                command("release", "upload", tag, str(root / "first" / name), "--repo", repo)
+        assert {a["name"] for a in release()["assets"]} == set(names)
+
+        download = root / "download"
+        download.mkdir()
+        args = ["release", "download", tag, "--repo", repo, "--dir", str(download)]
+        for name in names:
+            args += ["--pattern", name]
+        command(*args)
+        checksums = []
+        for name in names:
+            local = (root / "first" / name).read_bytes()
+            uploaded = (download / name).read_bytes()
+            assert local == uploaded, f"Uploaded asset differs: {name}"
+            checksums.append({"name": name, "sha256": hashlib.sha256(uploaded).hexdigest()})
+        subprocess.run(["sha256sum", "-c", "SHA256SUMS"], cwd=download, check=True)
+        if r["isDraft"]:
+            command("release", "edit", tag, "--repo", repo, "--verify-tag", "--draft=false", "--prerelease", "--latest=false")
+        r = release()
+        assert not r["isDraft"] and r["isPrerelease"]
+        assert r["tagName"] == tag and r["targetCommitish"] == commit and r["body"].strip() == expected_body
+        assert {a["name"] for a in r["assets"]} == set(names)
+        result = {"url": r["url"], "tag_sha": expected_tag_sha, "source_commit": commit, "prerelease": True, "assets": checksums}
+        (root / "publication-result.json").write_text(json.dumps(result, indent=2) + "\n")
+        print(json.dumps(result, indent=2))
+        with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:
+            summary.write(f"Published pre-release: {r['url']}\n\nTag object: `{expected_tag_sha}`\n\nValidated source: `{commit}`\n\n")
+            for asset in checksums:
+                summary.write(f"- `{asset['name']}`: `{asset['sha256']}`\n")
+        PY
