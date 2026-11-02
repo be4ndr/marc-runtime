@@ -28,6 +28,16 @@ It downloads pinned dependencies before running tests and builds offline:
    executable, including startup, shutdown, workflow execution and resume.
 5. Check documentation links, Go formatting, shell syntax and unchanged inputs.
 
+The independent **Native Linux ARM64** job uses `ubuntu-24.04-arm` and the same
+Go 1.27.3 pin. It checks the host and Go architecture, runs the full native test
+suite and vet, then uses the unchanged packaging script and verifies checksums.
+It extracts the arm64 archive and runs the existing CLI/MCP tests with
+`MARC_TEST_BINARY` pointing at that packaged executable. The native suite covers
+`TestFreshInitializationAndRestart`, `TestSQLiteMultiprocessDurabilityAndRecovery`,
+`TestWorkflowRestartCutPoints` and the external restart/replay tests. Both jobs
+initialize durable test storage before `setup-go`. ARM64 native checks complement
+the existing AMD64 race, repeated recovery/concurrency and reproducibility gates.
+
 The full suite includes `TestWorkflowRestartCutPoints`,
 `TestB7RemediationResolutionRestartAndReplay`,
 `TestMutationActorRejectsEveryDomainMutationAtomically`,
@@ -64,10 +74,11 @@ build directories on one host, not independent machines or toolchain bootstrap.
 
 ## Before publication
 
-Require a successful hosted release-validation run for the final commit, review
+Require both hosted release-validation jobs to pass for the final commit, review
 the checksums and archive contents, and review the draft notes against that run.
-Verify native arm64 operation separately before claiming that architecture has
-runtime coverage. Daily CI and release validation use Go 1.27.3; the minimum supported\nversion is Go 1.27.0.
+Native ARM64 coverage requires a successful ARM64 job for that commit; an AMD64
+pass or cross-compilation alone is insufficient. Daily CI and release validation
+use Go 1.27.3; the minimum supported version is Go 1.27.0.
 Private vulnerability reporting and branch protection are repository settings;
 the release workflow does not reconfigure or attest them. No signing or
 provenance attestation is prepared by this process.
